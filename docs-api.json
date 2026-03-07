@@ -1,0 +1,1322 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1": {
+      "get": {
+        "operationId": "AppController_getHello_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "User login",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset link sent"
+          }
+        },
+        "summary": "Request password reset",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password successfully reset"
+          }
+        },
+        "summary": "Reset password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/users/profile": {
+      "get": {
+        "operationId": "UsersController_getProfile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user profile",
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_updateProfile_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update current user profile (Name, Password, Phone)",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_deleteProfile_v1",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Account deactivated successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate (Soft Delete) current account",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "operationId": "UsersController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new user (Admin)",
+        "tags": [
+          "Users"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_findAll_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all active users (Admin)",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user by ID (Admin)",
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update any user (Admin)",
+        "tags": [
+          "Users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Permanently Delete user (Admin)",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/packages": {
+      "post": {
+        "operationId": "PackagesController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePackageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new package (Admin only)",
+        "tags": [
+          "Packages"
+        ]
+      },
+      "get": {
+        "operationId": "PackagesController_findAll_v1",
+        "parameters": [
+          {
+            "name": "featured",
+            "required": false,
+            "in": "query",
+            "description": "Filter by featured packages only",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get all packages",
+        "tags": [
+          "Packages"
+        ]
+      }
+    },
+    "/api/v1/packages/{slug}": {
+      "get": {
+        "operationId": "PackagesController_findOne_v1",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get a package by slug",
+        "tags": [
+          "Packages"
+        ]
+      }
+    },
+    "/api/v1/packages/{id}": {
+      "patch": {
+        "operationId": "PackagesController_update_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePackageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a package (Admin only)",
+        "tags": [
+          "Packages"
+        ]
+      },
+      "delete": {
+        "operationId": "PackagesController_remove_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a package (Admin only)",
+        "tags": [
+          "Packages"
+        ]
+      }
+    },
+    "/api/v1/blogs": {
+      "post": {
+        "operationId": "BlogsController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Blog created successfully."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new blog post (Admin only)",
+        "tags": [
+          "Blogs"
+        ]
+      },
+      "get": {
+        "operationId": "BlogsController_findAll_v1",
+        "parameters": [
+          {
+            "name": "tag",
+            "required": false,
+            "in": "query",
+            "description": "Filter blogs by tag",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of published blogs."
+          }
+        },
+        "summary": "Get all published blogs",
+        "tags": [
+          "Blogs"
+        ]
+      }
+    },
+    "/api/v1/blogs/admin/all": {
+      "get": {
+        "operationId": "BlogsController_findAllAdmin_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all blogs including drafts (Admin only)",
+        "tags": [
+          "Blogs"
+        ]
+      }
+    },
+    "/api/v1/blogs/{slug}": {
+      "get": {
+        "operationId": "BlogsController_findOne_v1",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog details."
+          }
+        },
+        "summary": "Get a blog by slug",
+        "tags": [
+          "Blogs"
+        ]
+      }
+    },
+    "/api/v1/blogs/{id}": {
+      "patch": {
+        "operationId": "BlogsController_update_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBlogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a blog post (Admin only)",
+        "tags": [
+          "Blogs"
+        ]
+      },
+      "delete": {
+        "operationId": "BlogsController_remove_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a blog post (Admin only)",
+        "tags": [
+          "Blogs"
+        ]
+      }
+    },
+    "/api/v1/package-bookings": {
+      "post": {
+        "operationId": "PackageBookingsController_create_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePackageBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new package booking (User)",
+        "tags": [
+          "Package Bookings"
+        ]
+      },
+      "get": {
+        "operationId": "PackageBookingsController_findAll_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all bookings"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all bookings (Admin only)",
+        "tags": [
+          "Package Bookings"
+        ]
+      }
+    },
+    "/api/v1/package-bookings/my-bookings": {
+      "get": {
+        "operationId": "PackageBookingsController_getMyBookings_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of user bookings"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user bookings",
+        "tags": [
+          "Package Bookings"
+        ]
+      }
+    },
+    "/api/v1/package-bookings/{id}/status": {
+      "patch": {
+        "operationId": "PackageBookingsController_updateStatus_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookingStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking status updated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update booking status (Admin only)",
+        "tags": [
+          "Package Bookings"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Jawla Tours API",
+    "description": "The Jawla Tours API description",
+    "version": "1.0",
+    "contact": {
+
+    }
+  },
+  "tags": [
+    {
+      "name": "jawla",
+      "description": ""
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "User password (min 6 characters)"
+          },
+          "confirmPassword": {
+            "type": "string",
+            "example": "password123",
+            "description": "Confirm password matching the password field"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Full name of the user"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "confirmPassword",
+          "name"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR...",
+            "description": "JWT Access Token"
+          },
+          "user": {
+            "type": "object",
+            "example": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "email": "user@example.com",
+              "name": "John Doe",
+              "role": "USER"
+            },
+            "description": "User details"
+          }
+        },
+        "required": [
+          "access_token",
+          "user"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "User password"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email address to send reset link"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "reset-token-123",
+            "description": "Password reset token received via email"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "newPassword123",
+            "description": "New password (min 6 characters)"
+          },
+          "confirmNewPassword": {
+            "type": "string",
+            "example": "newPassword123",
+            "description": "Confirm new password"
+          }
+        },
+        "required": [
+          "token",
+          "newPassword",
+          "confirmNewPassword"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ]
+          },
+          "phone": {
+            "type": "string",
+            "example": "0123456789"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "name",
+          "role",
+          "phone",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Full name"
+          },
+          "password": {
+            "type": "string",
+            "example": "newpassword123",
+            "description": "New password"
+          },
+          "phone": {
+            "type": "string",
+            "example": "01000000000",
+            "description": "Phone number"
+          }
+        }
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "User password (min 6 characters)"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Full name of the user"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "default": "USER",
+            "description": "User role"
+          },
+          "phone": {
+            "type": "string",
+            "example": "0123456789",
+            "description": "User phone number"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "name",
+          "role",
+          "phone"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "User password (min 6 characters)"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Full name of the user"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "ADMIN",
+              "USER"
+            ],
+            "default": "USER",
+            "description": "User role"
+          },
+          "phone": {
+            "type": "string",
+            "example": "0123456789",
+            "description": "User phone number"
+          }
+        }
+      },
+      "CreatePackageDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Saudi Arabia Trips",
+            "description": "Title of the package"
+          },
+          "description": {
+            "type": "string",
+            "example": "Experience the magic of Arabia...",
+            "description": "Detailed description"
+          },
+          "price": {
+            "type": "number",
+            "example": 27800,
+            "description": "Price of the package"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EGP",
+            "description": "Currency code"
+          },
+          "duration": {
+            "type": "string",
+            "example": "10 Days",
+            "description": "Duration of the package"
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/image.jpg",
+            "description": "Cover image URL"
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "example": true,
+            "description": "Show on homepage?"
+          },
+          "includedServices": {
+            "example": [
+              "Flight",
+              "Hotel",
+              "Visa"
+            ],
+            "description": "List of included services",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "price",
+          "duration",
+          "image",
+          "includedServices"
+        ]
+      },
+      "UpdatePackageDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Saudi Arabia Trips",
+            "description": "Title of the package"
+          },
+          "description": {
+            "type": "string",
+            "example": "Experience the magic of Arabia...",
+            "description": "Detailed description"
+          },
+          "price": {
+            "type": "number",
+            "example": 27800,
+            "description": "Price of the package"
+          },
+          "currency": {
+            "type": "string",
+            "example": "EGP",
+            "description": "Currency code"
+          },
+          "duration": {
+            "type": "string",
+            "example": "10 Days",
+            "description": "Duration of the package"
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/image.jpg",
+            "description": "Cover image URL"
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "example": true,
+            "description": "Show on homepage?"
+          },
+          "includedServices": {
+            "example": [
+              "Flight",
+              "Hotel",
+              "Visa"
+            ],
+            "description": "List of included services",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "CreateBlogDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Top 10 Places to Visit in Egypt",
+            "description": "Blog title"
+          },
+          "content": {
+            "type": "string",
+            "example": "\u003Ch1\u003EWelcome to Egypt\u003C/h1\u003E...",
+            "description": "HTML Content"
+          },
+          "slug": {
+            "type": "string",
+            "example": "top-10-places-egypt",
+            "description": "SEO Friendly URL Slug"
+          },
+          "metaTitle": {
+            "type": "string",
+            "example": "Travel Guide",
+            "description": "Meta Title for SEO"
+          },
+          "metaDescription": {
+            "type": "string",
+            "example": "A complete guide for traveling to Egypt...",
+            "description": "Meta Description"
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/blog-cover.jpg",
+            "description": "Cover image URL"
+          },
+          "tags": {
+            "example": [
+              "Travel",
+              "Egypt",
+              "Guide"
+            ],
+            "description": "Tags",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isPublished": {
+            "type": "boolean",
+            "example": true,
+            "description": "Publish immediately?"
+          }
+        },
+        "required": [
+          "title",
+          "content",
+          "tags"
+        ]
+      },
+      "UpdateBlogDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Top 10 Places to Visit in Egypt",
+            "description": "Blog title"
+          },
+          "content": {
+            "type": "string",
+            "example": "\u003Ch1\u003EWelcome to Egypt\u003C/h1\u003E...",
+            "description": "HTML Content"
+          },
+          "slug": {
+            "type": "string",
+            "example": "top-10-places-egypt",
+            "description": "SEO Friendly URL Slug"
+          },
+          "metaTitle": {
+            "type": "string",
+            "example": "Travel Guide",
+            "description": "Meta Title for SEO"
+          },
+          "metaDescription": {
+            "type": "string",
+            "example": "A complete guide for traveling to Egypt...",
+            "description": "Meta Description"
+          },
+          "image": {
+            "type": "string",
+            "example": "https://example.com/blog-cover.jpg",
+            "description": "Cover image URL"
+          },
+          "tags": {
+            "example": [
+              "Travel",
+              "Egypt",
+              "Guide"
+            ],
+            "description": "Tags",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isPublished": {
+            "type": "boolean",
+            "example": true,
+            "description": "Publish immediately?"
+          }
+        }
+      },
+      "CreatePackageBookingDto": {
+        "type": "object",
+        "properties": {
+          "packageId": {
+            "type": "string",
+            "example": "550e8400-e29b-41d4-a716-446655440000",
+            "description": "Package UUID"
+          },
+          "travelDate": {
+            "type": "string",
+            "example": "2026-03-15",
+            "description": "Travel date (ISO 8601 format)"
+          },
+          "adults": {
+            "type": "number",
+            "example": 2,
+            "description": "Number of adults",
+            "minimum": 1
+          },
+          "children": {
+            "type": "number",
+            "example": 1,
+            "description": "Number of children",
+            "minimum": 0
+          },
+          "notes": {
+            "type": "string",
+            "example": "We prefer a sea view room",
+            "description": "Additional notes or special requests"
+          }
+        },
+        "required": [
+          "packageId",
+          "travelDate",
+          "adults"
+        ]
+      },
+      "UpdateBookingStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "CONFIRMED",
+            "description": "Booking status",
+            "enum": [
+              "PENDING",
+              "CONFIRMED",
+              "CANCELLED",
+              "COMPLETED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      }
+    }
+  }
+}

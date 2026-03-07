@@ -1,0 +1,116 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply box-border;
+}
+
+html {
+  @apply scroll-smooth;
+}
+
+body {
+  @apply bg-neutral-50 text-neutral-900;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-200;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-500 rounded-full hover:bg-primary-600;
+}
+
+/* Form Inputs */
+@layer components {
+  .input-base {
+    @apply w-full px-4 py-2.5 rounded-lg border border-neutral-300 bg-white text-neutral-900 placeholder-neutral-400 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100;
+  }
+
+  .btn-base {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium rounded-lg transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-neutral-200 text-neutral-900 hover:bg-neutral-300;
+  }
+
+  .btn-danger {
+    @apply btn-base bg-error text-white hover:bg-red-600 active:bg-red-700;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .card {
+    @apply bg-white rounded-lg border border-neutral-200 shadow-sm;
+  }
+
+  .text-error {
+    @apply text-red-600 text-sm mt-1;
+  }
+}
+
+/* Table Styling */
+@layer components {
+  .table-container {
+    @apply overflow-x-auto rounded-lg border border-neutral-200;
+  }
+
+  .table-header {
+    @apply bg-neutral-100 font-semibold text-neutral-700;
+  }
+
+  .table-row {
+    @apply border-b border-neutral-200 hover:bg-neutral-50 transition-colors;
+  }
+
+  .table-cell {
+    @apply px-6 py-4 text-neutral-900;
+  }
+}
+
+/* Modal Styling */
+@layer components {
+  .modal-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+  }
+
+  .modal-content {
+    @apply bg-white rounded-lg shadow-lg max-w-lg w-full mx-4;
+  }
+}
+
+/* Toast styling */
+@layer components {
+  .toast {
+    @apply rounded-lg px-4 py-3 text-white shadow-lg;
+  }
+
+  .toast-success {
+    @apply bg-success;
+  }
+
+  .toast-error {
+    @apply bg-error;
+  }
+
+  .toast-warning {
+    @apply bg-warning text-neutral-900;
+  }
+
+  .toast-info {
+    @apply bg-primary-600;
+  }
+}
