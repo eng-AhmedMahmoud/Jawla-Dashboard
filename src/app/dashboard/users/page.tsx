@@ -53,9 +53,9 @@ export default function UsersPage() {
       setIsEditMode(true);
       setSelectedUser(user);
       setFormData({
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
         role: user.role,
         password: "",
       });
@@ -285,6 +285,7 @@ export default function UsersPage() {
               setFormData({ ...formData, phone: e.target.value })
             }
             error={errors.phone}
+            placeholder={isEditMode ? "Add phone" : ""}
           />
 
           <div>

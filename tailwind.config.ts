@@ -38,7 +38,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        sans: ['var(--font-ibm-plex-arabic)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        arabic: ['var(--font-ibm-plex-arabic)', 'system-ui', 'sans-serif'],
+        manrope: ['var(--font-manrope)', 'system-ui', 'sans-serif'],
       },
     },
   },
