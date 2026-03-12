@@ -8,17 +8,17 @@ import { Modal } from "@/components/ui/Modal";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { useAppStore } from "@/store/useAppStore";
 import { apiService } from "@/lib/api";
-import { News } from "@/types";
+import { Blog } from "@/types";
 import { formatDate, generateSlug } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Edit2, Trash2, Plus, Search } from "lucide-react";
 
-export default function NewsPage() {
+export default function BlogsPage() {
   const { addToast } = useAppStore();
-  const [news, setNews] = useState<News[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedNews, setSelectedNews] = useState<News | null>(null);
+  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,17 +35,17 @@ export default function NewsPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    fetchNews();
+    fetchBlogs();
   }, []);
 
-  const fetchNews = async () => {
+  const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const data = await apiService.getAllNewsAdmin();
-      setNews(Array.isArray(data) ? data : data.data || []);
+      const data = await apiService.getAllBlogsAdmin();
+      setBlogs(Array.isArray(data) ? data : data.data || []);
     } catch (error: any) {
       addToast(
-        error.response?.data?.message || "Failed to fetch news",
+        error.response?.data?.message || "Failed to fetch blogs",
         "error"
       );
     } finally {
@@ -53,10 +53,10 @@ export default function NewsPage() {
     }
   };
 
-  const handleOpenModal = (item?: News) => {
+  const handleOpenModal = (item?: Blog) => {
     if (item) {
       setIsEditMode(true);
-      setSelectedNews(item);
+      setSelectedBlog(item);
       setFormData({
         title: item.title,
         content: item.content,
@@ -70,7 +70,7 @@ export default function NewsPage() {
       });
     } else {
       setIsEditMode(false);
-      setSelectedNews(null);
+      setSelectedBlog(null);
       setFormData({
         title: "",
         content: "",
@@ -139,16 +139,16 @@ export default function NewsPage() {
         isPublished: formData.isPublished,
       };
 
-      if (isEditMode && selectedNews) {
-        await apiService.updateNews(selectedNews.id, submitData);
-        addToast("News updated successfully", "success");
+      if (isEditMode && selectedBlog) {
+        await apiService.updateBlog(selectedBlog.id, submitData);
+        addToast("Blog updated successfully", "success");
       } else {
-        await apiService.createNews(submitData);
-        addToast("News created successfully", "success");
+        await apiService.createBlog(submitData);
+        addToast("Blog created successfully", "success");
       }
 
       setIsModalOpen(false);
-      fetchNews();
+      fetchBlogs();
     } catch (error: any) {
       const errorMsg =
         error.response?.data?.message || "Operation failed. Please try again.";
@@ -157,21 +157,21 @@ export default function NewsPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this news article?")) {
+    if (confirm("Are you sure you want to delete this blog article?")) {
       try {
-        await apiService.deleteNews(id);
-        addToast("News deleted successfully", "success");
-        fetchNews();
+        await apiService.deleteBlog(id);
+        addToast("Blog deleted successfully", "success");
+        fetchBlogs();
       } catch (error: any) {
         addToast(
-          error.response?.data?.message || "Failed to delete news",
+          error.response?.data?.message || "Failed to delete blog",
           "error"
         );
       }
     }
   };
 
-  const filteredNews = news.filter((item) =>
+  const filteredBlogs = blogs.filter((item) =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -189,9 +189,9 @@ export default function NewsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900">News</h1>
+            <h1 className="text-3xl font-bold text-neutral-900">Blogs</h1>
             <p className="text-neutral-600 mt-1">
-              Create and manage news content
+              Create and manage blog content
             </p>
           </div>
           <Button onClick={() => handleOpenModal()}>
@@ -204,7 +204,7 @@ export default function NewsPage() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400" size={20} />
           <Input
-            placeholder="Search news articles..."
+            placeholder="Search blog articles..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -234,7 +234,7 @@ export default function NewsPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredNews.map((item) => (
+              {filteredBlogs.map((item) => (
                 <tr key={item.id} className="border-t border-neutral-200 hover:bg-neutral-50">
                   <td className="px-6 py-4">
                     <div className="flex items-start gap-3">
@@ -245,7 +245,7 @@ export default function NewsPage() {
                           className="w-12 h-12 rounded object-cover"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src =
-                              "https://via.placeholder.com/48?text=News";
+                              "https://via.placeholder.com/48?text=Blog";
                           }}
                         />
                       )}
@@ -309,9 +309,9 @@ export default function NewsPage() {
             </tbody>
           </table>
 
-          {filteredNews.length === 0 && (
+          {filteredBlogs.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-neutral-600">No news articles found</p>
+              <p className="text-neutral-600">No blog articles found</p>
             </div>
           )}
         </div>
@@ -321,7 +321,7 @@ export default function NewsPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={isEditMode ? "Edit News Article" : "Create New News Article"}
+        title={isEditMode ? "Edit Blog Article" : "Create New Blog Article"}
         size="lg"
         footer={
           <>
@@ -336,7 +336,7 @@ export default function NewsPage() {
       >
         <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
           <Input
-            label="News Title"
+            label="Blog Title"
             value={formData.title}
             onChange={(e) => handleTitleChange(e.target.value)}
             error={errors.title}
@@ -356,7 +356,7 @@ export default function NewsPage() {
             value={formData.content}
             onChange={(e) => setFormData({ ...formData, content: e.target.value })}
             error={errors.content}
-            placeholder="Write your news content here... HTML tags are supported"
+            placeholder="Write your blog content here... HTML tags are supported"
             className="min-h-32"
           />
 

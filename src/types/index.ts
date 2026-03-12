@@ -75,8 +75,8 @@ export interface CreatePackageDto {
 
 export interface UpdatePackageDto extends Partial<CreatePackageDto> {}
 
-// News Models
-export interface News {
+// Blog Models
+export interface Blog {
   id: string;
   title: string;
   content: string;
@@ -90,7 +90,7 @@ export interface News {
   updatedAt?: string;
 }
 
-export interface CreateNewsDto {
+export interface CreateBlogDto {
   title: string;
   content: string;
   slug?: string;
@@ -101,7 +101,23 @@ export interface CreateNewsDto {
   isPublished?: boolean;
 }
 
-export interface UpdateNewsDto extends Partial<CreateNewsDto> {}
+export interface UpdateBlogDto extends Partial<CreateBlogDto> {}
+
+// Inquiry Models
+export type InquiryStatus = "PENDING" | "REVIEWED" | "RESOLVED";
+
+export interface Inquiry {
+  id: string;
+  name: string;
+  phone: string;
+  whatsapp?: string;
+  travelers: number;
+  packageId: string;
+  package?: Package;
+  status: InquiryStatus;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 // Create/Update User DTOs
 export interface CreateUserDto {

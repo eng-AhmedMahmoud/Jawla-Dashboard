@@ -9,13 +9,15 @@ import {
   Users,
   Package,
   BookOpen,
+  MessageSquare,
   TrendingUp,
 } from "lucide-react";
 
 interface DashboardStats {
   totalUsers: number;
   totalPackages: number;
-  totalNews: number;
+  totalBlogs: number;
+  totalInquiries: number;
 }
 
 export default function DashboardPage() {
@@ -24,7 +26,8 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
     totalPackages: 0,
-    totalNews: 0,
+    totalBlogs: 0,
+    totalInquiries: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -37,17 +40,19 @@ export default function DashboardPage() {
       setLoading(true);
       
       // Fetch all data in parallel
-      const [usersData, packagesData, newsData] = await Promise.all([
+      const [usersData, packagesData, blogsData, inquiriesData] = await Promise.all([
         apiService.getAllUsers().catch(() => []),
         apiService.getAllPackages().catch(() => []),
-        apiService.getAllNewsAdmin().catch(() => []),
+        apiService.getAllBlogsAdmin().catch(() => []),
+        apiService.getAllInquiries().catch(() => []),
       ]);
 
       // Calculate stats
       setStats({
         totalUsers: Array.isArray(usersData) ? usersData.length : 0,
         totalPackages: Array.isArray(packagesData) ? packagesData.length : 0,
-        totalNews: Array.isArray(newsData) ? newsData.length : 0,
+        totalBlogs: Array.isArray(blogsData) ? blogsData.length : 0,
+        totalInquiries: Array.isArray(inquiriesData) ? inquiriesData.length : 0,
       });
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
@@ -72,11 +77,18 @@ export default function DashboardPage() {
       iconColor: "text-green-600",
     },
     {
-      name: "News",
-      value: stats.totalNews,
+      name: "Blogs",
+      value: stats.totalBlogs,
       icon: BookOpen,
       color: "bg-purple-100",
       iconColor: "text-purple-600",
+    },
+    {
+      name: "Inquiries",
+      value: stats.totalInquiries,
+      icon: MessageSquare,
+      color: "bg-orange-100",
+      iconColor: "text-orange-600",
     },
   ];
 
@@ -94,7 +106,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {statsCards.map((stat) => {
             const Icon = stat.icon;
             return (
@@ -121,7 +133,7 @@ export default function DashboardPage() {
           <h2 className="text-xl font-bold text-neutral-900 mb-6">
             Quick Actions
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <button
               onClick={() => router.push("/dashboard/packages")}
               className="flex flex-col items-center justify-center gap-2 py-6 bg-primary-600 text-white rounded-xl font-medium hover:bg-primary-700 transition-colors shadow-sm"
@@ -130,11 +142,18 @@ export default function DashboardPage() {
               <span>Add New Package</span>
             </button>
             <button
-              onClick={() => router.push("/dashboard/news")}
+              onClick={() => router.push("/dashboard/blogs")}
               className="flex flex-col items-center justify-center gap-2 py-6 bg-purple-50 text-purple-600 rounded-xl font-medium hover:bg-purple-100 transition-colors shadow-sm border border-purple-100"
             >
               <BookOpen size={28} />
-              <span>Write News Article</span>
+              <span>Write Blog Article</span>
+            </button>
+            <button
+              onClick={() => router.push("/dashboard/inquiries")}
+              className="flex flex-col items-center justify-center gap-2 py-6 bg-orange-50 text-orange-600 rounded-xl font-medium hover:bg-orange-100 transition-colors shadow-sm border border-orange-100"
+            >
+              <MessageSquare size={28} />
+              <span>View Inquiries</span>
             </button>
             <button
               onClick={() => router.push("/dashboard/users")}

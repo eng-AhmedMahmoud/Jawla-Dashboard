@@ -5,6 +5,7 @@ import {
   Users,
   BookOpen,
   Package,
+  MessageSquare,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,7 +15,8 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Users", href: "/dashboard/users", icon: Users },
   { name: "Packages", href: "/dashboard/packages", icon: Package },
-  { name: "News", href: "/dashboard/news", icon: BookOpen },
+  { name: "Blogs", href: "/dashboard/blogs", icon: BookOpen },
+  { name: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
 ];
 
 export function Sidebar() {

@@ -144,35 +144,46 @@ class ApiService {
     return response.data;
   }
 
-  // News Methods
-  async getAllNews(tag?: string) {
+  // Blog Methods
+  async getAllBlogs(tag?: string) {
     const params = tag ? { tag } : {};
     const response = await this.api.get("/news", { params });
     return response.data;
   }
 
-  async getAllNewsAdmin() {
+  async getAllBlogsAdmin() {
     const response = await this.api.get("/news/admin/all");
     return response.data;
   }
 
-  async getNewsBySlug(slug: string) {
+  async getBlogBySlug(slug: string) {
     const response = await this.api.get(`/news/${slug}`);
     return response.data;
   }
 
-  async createNews(data: any) {
+  async createBlog(data: any) {
     const response = await this.api.post("/news", data);
     return response.data;
   }
 
-  async updateNews(id: string, data: any) {
+  async updateBlog(id: string, data: any) {
     const response = await this.api.patch(`/news/${id}`, data);
     return response.data;
   }
 
-  async deleteNews(id: string) {
+  async deleteBlog(id: string) {
     const response = await this.api.delete(`/news/${id}`);
+    return response.data;
+  }
+
+  // Inquiry Methods
+  async getAllInquiries() {
+    const response = await this.api.get("/inquiries");
+    return response.data;
+  }
+
+  async updateInquiryStatus(id: string, status: string) {
+    const response = await this.api.patch(`/inquiries/${id}/status`, { status });
     return response.data;
   }
 
