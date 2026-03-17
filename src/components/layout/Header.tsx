@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/store/useAuthStore";
-import { Menu, LogOut, User, LayoutDashboard, Users, Package, BookOpen, MessageSquare, X } from "lucide-react";
+import { Menu, LogOut, User, LayoutDashboard, Users, Package, BookOpen, MessageSquare, Images, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,6 +13,7 @@ const navigation = [
   { name: "Packages", href: "/dashboard/packages", icon: Package },
   { name: "Blogs", href: "/dashboard/blogs", icon: BookOpen },
   { name: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
+  { name: "Hero Sliders", href: "/dashboard/hero-sliders", icon: Images },
 ];
 
 export function Header() {

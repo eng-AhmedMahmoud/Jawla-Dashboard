@@ -6,6 +6,9 @@ import {
   BookOpen,
   Package,
   MessageSquare,
+  FileText,
+  Images,
+  Info,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,6 +20,9 @@ const navigation = [
   { name: "Packages", href: "/dashboard/packages", icon: Package },
   { name: "Blogs", href: "/dashboard/blogs", icon: BookOpen },
   { name: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
+  { name: "Hero Sliders", href: "/dashboard/hero-sliders", icon: Images },
+  { name: "About Page", href: "/dashboard/about", icon: Info },
+  { name: "Content", href: "/dashboard/content", icon: FileText },
 ];
 
 export function Sidebar() {

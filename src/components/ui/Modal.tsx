@@ -9,7 +9,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
 export function Modal({
@@ -26,6 +26,7 @@ export function Modal({
     sm: "max-w-sm",
     md: "max-w-md",
     lg: "max-w-lg",
+    xl: "max-w-3xl",
   };
 
   return (

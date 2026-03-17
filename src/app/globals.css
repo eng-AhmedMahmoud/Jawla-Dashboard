@@ -92,6 +92,76 @@ body {
   }
 }
 
+/* TipTap Editor */
+.tiptap {
+  @apply outline-none;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  @apply text-neutral-400 float-left h-0 pointer-events-none;
+  content: attr(data-placeholder);
+}
+
+.tiptap h1 {
+  @apply text-2xl font-bold mt-6 mb-3;
+}
+
+.tiptap h2 {
+  @apply text-xl font-bold mt-5 mb-2;
+}
+
+.tiptap h3 {
+  @apply text-lg font-semibold mt-4 mb-2;
+}
+
+.tiptap p {
+  @apply mb-3;
+}
+
+.tiptap ul {
+  @apply list-disc pl-6 mb-3;
+}
+
+.tiptap ol {
+  @apply list-decimal pl-6 mb-3;
+}
+
+.tiptap li {
+  @apply mb-1;
+}
+
+.tiptap blockquote {
+  @apply border-l-4 border-neutral-300 pl-4 italic text-neutral-600 my-4;
+}
+
+.tiptap code {
+  @apply bg-neutral-100 rounded px-1.5 py-0.5 text-sm font-mono;
+}
+
+.tiptap pre {
+  @apply bg-neutral-900 text-neutral-100 rounded-lg p-4 my-4 overflow-x-auto;
+}
+
+.tiptap pre code {
+  @apply bg-transparent p-0;
+}
+
+.tiptap hr {
+  @apply border-neutral-300 my-6;
+}
+
+.tiptap a {
+  @apply text-primary-600 underline;
+}
+
+.tiptap img {
+  @apply rounded-lg max-w-full h-auto my-4 mx-auto;
+}
+
+.tiptap img.ProseMirror-selectednode {
+  @apply ring-2 ring-primary-500;
+}
+
 /* Toast styling */
 @layer components {
   .toast {

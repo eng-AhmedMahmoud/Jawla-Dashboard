@@ -11,6 +11,7 @@ import { apiService } from "@/lib/api";
 import { Package, PackageType } from "@/types";
 import { formatPrice, formatDate, generateSlug } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { Edit2, Trash2, Plus, Search } from "lucide-react";
 
 export default function PackagesPage() {
@@ -412,12 +413,11 @@ export default function PackagesPage() {
             )}
           </div>
 
-          <Input
-            label="Image URL"
+          <ImageUpload
+            label="Package Image"
             value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+            onChange={(url) => setFormData({ ...formData, image: url })}
             error={errors.image}
-            placeholder="https://example.com/image.jpg"
           />
 
           <div>

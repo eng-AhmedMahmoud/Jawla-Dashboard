@@ -187,6 +187,144 @@ class ApiService {
     return response.data;
   }
 
+  // Content Methods
+  async getAllContentAdmin() {
+    const response = await this.api.get("/content/admin/all");
+    return response.data;
+  }
+
+  async getContent(page?: string) {
+    const params = page ? { page } : {};
+    const response = await this.api.get("/content", { params });
+    return response.data;
+  }
+
+  async getContentById(id: string) {
+    const response = await this.api.get(`/content/${id}`);
+    return response.data;
+  }
+
+  async createContent(data: any) {
+    const response = await this.api.post("/content", data);
+    return response.data;
+  }
+
+  async updateContent(id: string, data: any) {
+    const response = await this.api.patch(`/content/${id}`, data);
+    return response.data;
+  }
+
+  async deleteContent(id: string) {
+    const response = await this.api.delete(`/content/${id}`);
+    return response.data;
+  }
+
+  // About Page Methods
+  async getAboutPage() {
+    const response = await this.api.get("/about");
+    return response.data;
+  }
+
+  async getAboutConfig() {
+    const response = await this.api.get("/about/config");
+    return response.data;
+  }
+
+  async updateAboutConfig(data: any) {
+    const response = await this.api.patch("/about/config", data);
+    return response.data;
+  }
+
+  async getAboutStats() {
+    const response = await this.api.get("/about/stats");
+    return response.data;
+  }
+
+  async createAboutStat(data: any) {
+    const response = await this.api.post("/about/stats", data);
+    return response.data;
+  }
+
+  async updateAboutStat(id: string, data: any) {
+    const response = await this.api.patch(`/about/stats/${id}`, data);
+    return response.data;
+  }
+
+  async deleteAboutStat(id: string) {
+    const response = await this.api.delete(`/about/stats/${id}`);
+    return response.data;
+  }
+
+  async getAboutCards(section?: string) {
+    const params = section ? { section } : {};
+    const response = await this.api.get("/about/cards", { params });
+    return response.data;
+  }
+
+  async getAboutCardsAdmin() {
+    const response = await this.api.get("/about/cards/admin");
+    return response.data;
+  }
+
+  async createAboutCard(data: any) {
+    const response = await this.api.post("/about/cards", data);
+    return response.data;
+  }
+
+  async updateAboutCard(id: string, data: any) {
+    const response = await this.api.patch(`/about/cards/${id}`, data);
+    return response.data;
+  }
+
+  async deleteAboutCard(id: string) {
+    const response = await this.api.delete(`/about/cards/${id}`);
+    return response.data;
+  }
+
+  // Hero Slider Methods
+  async getAllHeroSliders() {
+    const response = await this.api.get("/hero-sliders/admin/all");
+    return response.data;
+  }
+
+  async getHeroSliderById(id: string) {
+    const response = await this.api.get(`/hero-sliders/${id}`);
+    return response.data;
+  }
+
+  async createHeroSlider(data: any) {
+    const response = await this.api.post("/hero-sliders", data);
+    return response.data;
+  }
+
+  async updateHeroSlider(id: string, data: any) {
+    const response = await this.api.patch(`/hero-sliders/${id}`, data);
+    return response.data;
+  }
+
+  async deleteHeroSlider(id: string) {
+    const response = await this.api.delete(`/hero-sliders/${id}`);
+    return response.data;
+  }
+
+  // Upload Methods
+  async uploadImage(file: File): Promise<{ url: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await this.api.post("/upload/image", formData, {
+      headers: { "Content-Type": undefined },
+    });
+    // Backend returns relative URL like "/uploads/filename.jpg"
+    // Construct the full URL using the API base origin
+    const baseOrigin = API_BASE_URL.replace(/\/api\/v1$/, "");
+    return {
+      ...response.data,
+      url: response.data.url?.startsWith("http")
+        ? response.data.url
+        : `${baseOrigin}${response.data.url}`,
+    };
+  }
+
   // Token Management
   private setToken(token: string) {
     if (typeof window !== "undefined") {

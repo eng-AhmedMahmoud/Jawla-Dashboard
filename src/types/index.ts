@@ -130,6 +130,106 @@ export interface CreateUserDto {
 
 export interface UpdateUserDto extends Partial<CreateUserDto> {}
 
+// Content Models
+export type ContentPage = "HOME" | "FLIGHTS" | "PACKAGES" | "HAJJ_UMRAH" | "BLOGS" | "ABOUT" | "CONTACT" | "FAQ";
+
+export interface Content {
+  id: string;
+  page: ContentPage;
+  textAr: string;
+  textEn: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateContentDto {
+  page: ContentPage;
+  textAr: string;
+  textEn: string;
+  isActive?: boolean;
+}
+
+export interface UpdateContentDto extends Partial<CreateContentDto> {}
+
+// Hero Slider Models
+export interface HeroSlider {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  image: string;
+  linkUrl: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateHeroSliderDto {
+  titleAr: string;
+  titleEn: string;
+  image: string;
+  linkUrl: string;
+  order: number;
+  isActive?: boolean;
+}
+
+export interface UpdateHeroSliderDto extends Partial<CreateHeroSliderDto> {}
+
+// About Page Models
+export interface AboutConfig {
+  id: string;
+  heroTitleAr: string;
+  heroTitleEn: string;
+  heroSubtitleAr: string | null;
+  heroSubtitleEn: string | null;
+  heroIconUrl: string | null;
+  aboutTitleAr: string;
+  aboutTitleEn: string;
+  aboutDescriptionAr: string | null;
+  aboutDescriptionEn: string | null;
+  aboutImageUrl: string | null;
+  aboutImageCaptionAr: string | null;
+  aboutImageCaptionEn: string | null;
+  updatedAt: string;
+}
+
+export interface AboutStat {
+  id: string;
+  labelAr: string;
+  labelEn: string;
+  value: string;
+  icon?: string | null;
+  sortOrder?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type AboutCardSection = "VISION_MISSION" | "VALUES" | "SERVICES";
+
+export interface AboutCard {
+  id: string;
+  section: AboutCardSection;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
+  icon?: string | null;
+  imageUrl?: string | null;
+  sortOrder?: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface AboutPageData {
+  config: AboutConfig;
+  stats: AboutStat[];
+  visionMission: AboutCard[];
+  values: AboutCard[];
+  services: AboutCard[];
+}
+
 // API Response Wrapper
 export interface ApiResponse<T> {
   data?: T;

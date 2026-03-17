@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { RichTextEditor } from "@/components/ui/RichTextEditor";
 import { Modal } from "@/components/ui/Modal";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { useAppStore } from "@/store/useAppStore";
@@ -11,6 +12,7 @@ import { apiService } from "@/lib/api";
 import { Blog } from "@/types";
 import { formatDate, generateSlug } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { Edit2, Trash2, Plus, Search } from "lucide-react";
 
 export default function BlogsPage() {
@@ -322,7 +324,7 @@ export default function BlogsPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={isEditMode ? "Edit Blog Article" : "Create New Blog Article"}
-        size="lg"
+        size="xl"
         footer={
           <>
             <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
@@ -334,7 +336,7 @@ export default function BlogsPage() {
           </>
         }
       >
-        <form onSubmit={handleSubmit} className="space-y-4 max-h-96 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
           <Input
             label="Blog Title"
             value={formData.title}
@@ -351,13 +353,12 @@ export default function BlogsPage() {
             hint="Auto-generated from title"
           />
 
-          <Textarea
-            label="Content (HTML)"
+          <RichTextEditor
+            label="Content"
             value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+            onChange={(html) => setFormData({ ...formData, content: html })}
             error={errors.content}
-            placeholder="Write your blog content here... HTML tags are supported"
-            className="min-h-32"
+            placeholder="Write your blog content here..."
           />
 
           <Input
@@ -379,11 +380,10 @@ export default function BlogsPage() {
             className="min-h-20"
           />
 
-          <Input
-            label="Cover Image URL"
+          <ImageUpload
+            label="Cover Image"
             value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            placeholder="https://example.com/image.jpg"
+            onChange={(url) => setFormData({ ...formData, image: url })}
           />
 
           {/* Tags */}

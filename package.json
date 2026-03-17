@@ -10,6 +10,12 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
+    "@tiptap/extension-image": "^2.27.2",
+    "@tiptap/extension-link": "^2.27.2",
+    "@tiptap/extension-placeholder": "^2.27.2",
+    "@tiptap/pm": "^2.27.2",
+    "@tiptap/react": "^2.27.2",
+    "@tiptap/starter-kit": "^2.27.2",
     "axios": "^1.6.5",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
