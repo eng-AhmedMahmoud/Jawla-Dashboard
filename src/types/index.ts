@@ -196,11 +196,11 @@ export interface AboutConfig {
 
 export interface AboutStat {
   id: string;
+  valueAr: string;
+  valueEn: string;
   labelAr: string;
   labelEn: string;
-  value: string;
-  icon?: string | null;
-  sortOrder?: number;
+  order?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -210,13 +210,13 @@ export type AboutCardSection = "VISION_MISSION" | "VALUES" | "SERVICES";
 export interface AboutCard {
   id: string;
   section: AboutCardSection;
+  iconName?: string | null;
+  iconColor?: string | null;
   titleAr: string;
   titleEn: string;
-  descriptionAr: string;
-  descriptionEn: string;
-  icon?: string | null;
-  imageUrl?: string | null;
-  sortOrder?: number;
+  bodyAr: string;
+  bodyEn: string;
+  order?: number;
   isActive: boolean;
   createdAt?: string;
   updatedAt?: string;

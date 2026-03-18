@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { Modal } from "@/components/ui/Modal";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { useAppStore } from "@/store/useAppStore";
@@ -75,9 +76,9 @@ export default function AboutPageManagement() {
   const [statForm, setStatForm] = useState({
     labelAr: "",
     labelEn: "",
-    value: "",
-    icon: "",
-    sortOrder: 0,
+    valueAr: "",
+    valueEn: "",
+    order: 0,
   });
   const [statErrors, setStatErrors] = useState<Record<string, string>>({});
 
@@ -91,14 +92,15 @@ export default function AboutPageManagement() {
     section: "VISION_MISSION" as AboutCardSection,
     titleAr: "",
     titleEn: "",
-    descriptionAr: "",
-    descriptionEn: "",
-    icon: "",
-    imageUrl: "",
-    sortOrder: 0,
+    bodyAr: "",
+    bodyEn: "",
+    iconName: "",
+    iconColor: "",
+    order: 0,
     isActive: true,
   });
   const [cardErrors, setCardErrors] = useState<Record<string, string>>({});
+  const [deleteConfirm, setDeleteConfirm] = useState<{ type: "stat" | "card"; id: string } | null>(null);
 
   useEffect(() => {
     fetchAll();
@@ -174,14 +176,14 @@ export default function AboutPageManagement() {
       setStatForm({
         labelAr: item.labelAr,
         labelEn: item.labelEn,
-        value: item.value,
-        icon: item.icon || "",
-        sortOrder: item.sortOrder ?? 0,
+        valueAr: item.valueAr,
+        valueEn: item.valueEn,
+        order: item.order ?? 0,
       });
     } else {
       setIsStatEditMode(false);
       setSelectedStat(null);
-      setStatForm({ labelAr: "", labelEn: "", value: "", icon: "", sortOrder: 0 });
+      setStatForm({ labelAr: "", labelEn: "", valueAr: "", valueEn: "", order: 0 });
     }
     setStatErrors({});
     setIsStatModalOpen(true);
@@ -192,7 +194,8 @@ export default function AboutPageManagement() {
     const errs: Record<string, string> = {};
     if (!statForm.labelEn) errs.labelEn = "English label is required";
     if (!statForm.labelAr) errs.labelAr = "Arabic label is required";
-    if (!statForm.value) errs.value = "Value is required";
+    if (!statForm.valueEn) errs.valueEn = "English value is required";
+    if (!statForm.valueAr) errs.valueAr = "Arabic value is required";
     if (Object.keys(errs).length > 0) {
       setStatErrors(errs);
       return;
@@ -202,9 +205,9 @@ export default function AboutPageManagement() {
       const payload = {
         labelAr: statForm.labelAr,
         labelEn: statForm.labelEn,
-        value: statForm.value,
-        icon: statForm.icon || null,
-        sortOrder: statForm.sortOrder,
+        valueAr: statForm.valueAr,
+        valueEn: statForm.valueEn,
+        order: statForm.order,
       };
       if (isStatEditMode && selectedStat) {
         await apiService.updateAboutStat(selectedStat.id, payload);
@@ -224,17 +227,15 @@ export default function AboutPageManagement() {
   };
 
   const handleDeleteStat = async (id: string) => {
-    if (confirm("Are you sure you want to delete this stat?")) {
-      try {
-        await apiService.deleteAboutStat(id);
-        addToast("Stat deleted successfully", "success");
-        fetchAll();
-      } catch (error: any) {
-        addToast(
-          error.response?.data?.message || "Failed to delete stat",
-          "error"
-        );
-      }
+    try {
+      await apiService.deleteAboutStat(id);
+      addToast("Stat deleted successfully", "success");
+      fetchAll();
+    } catch (error: any) {
+      addToast(
+        error.response?.data?.message || "Failed to delete stat",
+        "error"
+      );
     }
   };
 
@@ -247,11 +248,11 @@ export default function AboutPageManagement() {
         section: item.section,
         titleAr: item.titleAr,
         titleEn: item.titleEn,
-        descriptionAr: item.descriptionAr,
-        descriptionEn: item.descriptionEn,
-        icon: item.icon || "",
-        imageUrl: item.imageUrl || "",
-        sortOrder: item.sortOrder ?? 0,
+        bodyAr: item.bodyAr,
+        bodyEn: item.bodyEn,
+        iconName: item.iconName || "",
+        iconColor: item.iconColor || "",
+        order: item.order ?? 0,
         isActive: item.isActive,
       });
     } else {
@@ -261,11 +262,11 @@ export default function AboutPageManagement() {
         section: "VISION_MISSION",
         titleAr: "",
         titleEn: "",
-        descriptionAr: "",
-        descriptionEn: "",
-        icon: "",
-        imageUrl: "",
-        sortOrder: 0,
+        bodyAr: "",
+        bodyEn: "",
+        iconName: "",
+        iconColor: "",
+        order: 0,
         isActive: true,
       });
     }
@@ -278,8 +279,8 @@ export default function AboutPageManagement() {
     const errs: Record<string, string> = {};
     if (!cardForm.titleEn) errs.titleEn = "English title is required";
     if (!cardForm.titleAr) errs.titleAr = "Arabic title is required";
-    if (!cardForm.descriptionEn) errs.descriptionEn = "English description is required";
-    if (!cardForm.descriptionAr) errs.descriptionAr = "Arabic description is required";
+    if (!cardForm.bodyEn) errs.bodyEn = "English description is required";
+    if (!cardForm.bodyAr) errs.bodyAr = "Arabic description is required";
     if (Object.keys(errs).length > 0) {
       setCardErrors(errs);
       return;
@@ -290,11 +291,11 @@ export default function AboutPageManagement() {
         section: cardForm.section,
         titleAr: cardForm.titleAr,
         titleEn: cardForm.titleEn,
-        descriptionAr: cardForm.descriptionAr,
-        descriptionEn: cardForm.descriptionEn,
-        icon: cardForm.icon || null,
-        imageUrl: cardForm.imageUrl || null,
-        sortOrder: cardForm.sortOrder,
+        bodyAr: cardForm.bodyAr,
+        bodyEn: cardForm.bodyEn,
+        iconName: cardForm.iconName || undefined,
+        iconColor: cardForm.iconColor || undefined,
+        order: cardForm.order,
         isActive: cardForm.isActive,
       };
       if (isCardEditMode && selectedCard) {
@@ -315,17 +316,15 @@ export default function AboutPageManagement() {
   };
 
   const handleDeleteCard = async (id: string) => {
-    if (confirm("Are you sure you want to delete this card?")) {
-      try {
-        await apiService.deleteAboutCard(id);
-        addToast("Card deleted successfully", "success");
-        fetchAll();
-      } catch (error: any) {
-        addToast(
-          error.response?.data?.message || "Failed to delete card",
-          "error"
-        );
-      }
+    try {
+      await apiService.deleteAboutCard(id);
+      addToast("Card deleted successfully", "success");
+      fetchAll();
+    } catch (error: any) {
+      addToast(
+        error.response?.data?.message || "Failed to delete card",
+        "error"
+      );
     }
   };
 
@@ -440,14 +439,6 @@ export default function AboutPageManagement() {
                 dir="rtl"
               />
             </div>
-            <ImageUpload
-              label="Hero Icon"
-              value={configForm.heroIconUrl}
-              onChange={(url) =>
-                setConfigForm({ ...configForm, heroIconUrl: url })
-              }
-            />
-
             <hr className="border-neutral-200" />
 
             <h2 className="text-lg font-semibold text-neutral-900">
@@ -563,14 +554,14 @@ export default function AboutPageManagement() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      {stat.icon && (
-                        <span className="text-2xl">{stat.icon}</span>
-                      )}
                       <div>
                         <p className="text-2xl font-bold text-primary-600">
-                          {stat.value}
+                          {stat.valueEn}
                         </p>
-                        <p className="text-sm text-neutral-700 font-medium">
+                        <p className="text-sm text-neutral-500" dir="rtl">
+                          {stat.valueAr}
+                        </p>
+                        <p className="text-sm text-neutral-700 font-medium mt-1">
                           {stat.labelEn}
                         </p>
                         <p
@@ -589,17 +580,17 @@ export default function AboutPageManagement() {
                         <Edit2 size={16} className="text-neutral-600" />
                       </button>
                       <button
-                        onClick={() => handleDeleteStat(stat.id)}
+                        onClick={() => setDeleteConfirm({ type: "stat", id: stat.id })}
                         className="p-1.5 hover:bg-red-100 rounded-lg transition-colors"
                       >
                         <Trash2 size={16} className="text-red-600" />
                       </button>
                     </div>
                   </div>
-                  {stat.sortOrder !== undefined && (
+                  {stat.order !== undefined && (
                     <div className="flex items-center gap-1 text-xs text-neutral-400">
                       <GripVertical size={12} />
-                      Order: {stat.sortOrder}
+                      Order: {stat.order}
                     </div>
                   )}
                 </div>
@@ -676,8 +667,13 @@ export default function AboutPageManagement() {
                       </td>
                       <td className="px-6 py-4 text-sm text-neutral-700">
                         <div className="flex items-center gap-2">
-                          {card.icon && (
-                            <span className="text-lg">{card.icon}</span>
+                          {card.iconName && (
+                            <span
+                              className="text-lg"
+                              style={card.iconColor ? { color: card.iconColor } : undefined}
+                            >
+                              {card.iconName}
+                            </span>
                           )}
                           {card.titleEn}
                         </div>
@@ -689,7 +685,7 @@ export default function AboutPageManagement() {
                         {card.titleAr}
                       </td>
                       <td className="px-6 py-4 text-sm text-neutral-500">
-                        {card.sortOrder ?? "-"}
+                        {card.order ?? "-"}
                       </td>
                       <td className="px-6 py-4">
                         <button
@@ -717,7 +713,7 @@ export default function AboutPageManagement() {
                             <Edit2 size={18} className="text-neutral-600" />
                           </button>
                           <button
-                            onClick={() => handleDeleteCard(card.id)}
+                            onClick={() => setDeleteConfirm({ type: "card", id: card.id })}
                             className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                           >
                             <Trash2 size={18} className="text-red-600" />
@@ -784,31 +780,33 @@ export default function AboutPageManagement() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
-              label="Value"
-              value={statForm.value}
+              label="Value (English)"
+              value={statForm.valueEn}
               onChange={(e) =>
-                setStatForm({ ...statForm, value: e.target.value })
+                setStatForm({ ...statForm, valueEn: e.target.value })
               }
-              error={statErrors.value}
+              error={statErrors.valueEn}
               placeholder="e.g., 15+ or 10,000"
             />
             <Input
-              label="Icon (emoji or text)"
-              value={statForm.icon}
+              label="Value (Arabic)"
+              value={statForm.valueAr}
               onChange={(e) =>
-                setStatForm({ ...statForm, icon: e.target.value })
+                setStatForm({ ...statForm, valueAr: e.target.value })
               }
-              placeholder="e.g., 🌍 or ✈️"
+              error={statErrors.valueAr}
+              placeholder="مثال: +15 أو 10,000"
+              dir="rtl"
             />
           </div>
           <Input
             label="Sort Order"
             type="number"
-            value={statForm.sortOrder.toString()}
+            value={statForm.order.toString()}
             onChange={(e) =>
               setStatForm({
                 ...statForm,
-                sortOrder: parseInt(e.target.value) || 0,
+                order: parseInt(e.target.value) || 0,
               })
             }
             placeholder="0"
@@ -881,55 +879,48 @@ export default function AboutPageManagement() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Textarea
-              label="Description (English)"
-              value={cardForm.descriptionEn}
+              label="Body (English)"
+              value={cardForm.bodyEn}
               onChange={(e) =>
-                setCardForm({ ...cardForm, descriptionEn: e.target.value })
+                setCardForm({ ...cardForm, bodyEn: e.target.value })
               }
-              error={cardErrors.descriptionEn}
-              placeholder="Card description in English"
+              error={cardErrors.bodyEn}
+              placeholder="Card body text in English"
               className="min-h-24"
             />
             <Textarea
-              label="Description (Arabic)"
-              value={cardForm.descriptionAr}
+              label="Body (Arabic)"
+              value={cardForm.bodyAr}
               onChange={(e) =>
-                setCardForm({ ...cardForm, descriptionAr: e.target.value })
+                setCardForm({ ...cardForm, bodyAr: e.target.value })
               }
-              error={cardErrors.descriptionAr}
-              placeholder="وصف البطاقة بالعربية"
+              error={cardErrors.bodyAr}
+              placeholder="نص البطاقة بالعربية"
               className="min-h-24"
               dir="rtl"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label="Icon (emoji or text)"
-              value={cardForm.icon}
-              onChange={(e) =>
-                setCardForm({ ...cardForm, icon: e.target.value })
-              }
-              placeholder="e.g., 🎯 or ✨"
-            />
-            <Input
-              label="Sort Order"
-              type="number"
-              value={cardForm.sortOrder.toString()}
-              onChange={(e) =>
-                setCardForm({
-                  ...cardForm,
-                  sortOrder: parseInt(e.target.value) || 0,
-                })
-              }
-              placeholder="0"
-            />
-          </div>
+          <Input
+            label="Icon Name (SVG name or emoji)"
+            value={cardForm.iconName}
+            onChange={(e) =>
+              setCardForm({ ...cardForm, iconName: e.target.value })
+            }
+            placeholder="e.g., heart, star, or 🎯"
+          />
 
-          <ImageUpload
-            label="Card Image (optional)"
-            value={cardForm.imageUrl}
-            onChange={(url) => setCardForm({ ...cardForm, imageUrl: url })}
+          <Input
+            label="Sort Order"
+            type="number"
+            value={cardForm.order.toString()}
+            onChange={(e) =>
+              setCardForm({
+                ...cardForm,
+                order: parseInt(e.target.value) || 0,
+              })
+            }
+            placeholder="0"
           />
 
           <label className="flex items-center gap-2">
@@ -947,6 +938,28 @@ export default function AboutPageManagement() {
           </label>
         </form>
       </Modal>
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        isOpen={!!deleteConfirm}
+        onClose={() => setDeleteConfirm(null)}
+        onConfirm={async () => {
+          if (deleteConfirm) {
+            if (deleteConfirm.type === "stat") {
+              await handleDeleteStat(deleteConfirm.id);
+            } else {
+              await handleDeleteCard(deleteConfirm.id);
+            }
+            setDeleteConfirm(null);
+          }
+        }}
+        title={deleteConfirm?.type === "stat" ? "Delete Stat" : "Delete Card"}
+        message={
+          deleteConfirm?.type === "stat"
+            ? "This stat will be permanently removed from the About page. This action cannot be undone."
+            : "This card will be permanently removed from the About page. This action cannot be undone."
+        }
+      />
     </DashboardLayout>
   );
 }

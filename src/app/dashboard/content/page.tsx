@@ -2,10 +2,8 @@
 
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
-import { Select } from "@/components/ui/Select";
-import { Modal } from "@/components/ui/Modal";
 import { LoadingSpinner } from "@/components/ui/Loading";
-import { RichTextEditor } from "@/components/ui/RichTextEditor";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
 import { apiService } from "@/lib/api";
 import { Content, ContentPage } from "@/types";
@@ -13,6 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Edit2, Trash2, Plus, Search, Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/Input";
+import Link from "next/link";
 
 const PAGE_OPTIONS: { value: ContentPage; label: string }[] = [
   { value: "HOME", label: "Home" },
@@ -31,16 +30,7 @@ export default function ContentManagementPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPage, setFilterPage] = useState<string>("");
-  const [selectedContent, setSelectedContent] = useState<Content | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [formData, setFormData] = useState({
-    page: "HOME" as ContentPage,
-    textAr: "",
-    textEn: "",
-    isActive: true,
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchContents();
@@ -61,72 +51,16 @@ export default function ContentManagementPage() {
     }
   };
 
-  const handleOpenModal = (item?: Content) => {
-    if (item) {
-      setIsEditMode(true);
-      setSelectedContent(item);
-      setFormData({
-        page: item.page,
-        textAr: item.textAr,
-        textEn: item.textEn,
-        isActive: item.isActive,
-      });
-    } else {
-      setIsEditMode(false);
-      setSelectedContent(null);
-      setFormData({
-        page: "HOME",
-        textAr: "",
-        textEn: "",
-        isActive: true,
-      });
-    }
-    setErrors({});
-    setIsModalOpen(true);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.textAr) newErrors.textAr = "Arabic text is required";
-    if (!formData.textEn) newErrors.textEn = "English text is required";
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+  const handleDelete = async (id: string) => {
     try {
-      if (isEditMode && selectedContent) {
-        await apiService.updateContent(selectedContent.id, formData);
-        addToast("Content updated successfully", "success");
-      } else {
-        await apiService.createContent(formData);
-        addToast("Content created successfully", "success");
-      }
-
-      setIsModalOpen(false);
+      await apiService.deleteContent(id);
+      addToast("Content deleted successfully", "success");
       fetchContents();
     } catch (error: any) {
-      const errorMsg =
-        error.response?.data?.message || "Operation failed. Please try again.";
-      addToast(errorMsg, "error");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this content?")) {
-      try {
-        await apiService.deleteContent(id);
-        addToast("Content deleted successfully", "success");
-        fetchContents();
-      } catch (error: any) {
-        addToast(
-          error.response?.data?.message || "Failed to delete content",
-          "error"
-        );
-      }
+      addToast(
+        error.response?.data?.message || "Failed to delete content",
+        "error"
+      );
     }
   };
 
@@ -191,10 +125,12 @@ export default function ContentManagementPage() {
               each page
             </p>
           </div>
-          <Button onClick={() => handleOpenModal()}>
-            <Plus size={20} />
-            New Content
-          </Button>
+          <Link href="/dashboard/content/new">
+            <Button>
+              <Plus size={20} />
+              New Content
+            </Button>
+          </Link>
         </div>
 
         {/* Filters */}
@@ -292,14 +228,14 @@ export default function ContentManagementPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => handleOpenModal(item)}
+                      <Link
+                        href={`/dashboard/content/${item.id}/edit`}
                         className="p-2 hover:bg-neutral-200 rounded-lg transition-colors"
                       >
                         <Edit2 size={18} className="text-neutral-600" />
-                      </button>
+                      </Link>
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => setDeleteId(item.id)}
                         className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                       >
                         <Trash2 size={18} className="text-red-600" />
@@ -319,79 +255,18 @@ export default function ContentManagementPage() {
         </div>
       </div>
 
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={isEditMode ? "Edit Content" : "Create New Content"}
-        size="xl"
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit}>
-              {isEditMode ? "Update" : "Create"}
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
-          <Select
-            label="Target Page"
-            value={formData.page}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                page: e.target.value as ContentPage,
-              })
-            }
-          >
-            {PAGE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </Select>
-
-          <RichTextEditor
-            label="English Text"
-            value={formData.textEn}
-            onChange={(html) =>
-              setFormData({ ...formData, textEn: html })
-            }
-            error={errors.textEn}
-            placeholder="Enter content text in English..."
-          />
-
-          <RichTextEditor
-            label="Arabic Text"
-            value={formData.textAr}
-            onChange={(html) =>
-              setFormData({ ...formData, textAr: html })
-            }
-            error={errors.textAr}
-            placeholder="أدخل نص المحتوى بالعربية..."
-            className="[&_.ProseMirror]:text-right"
-          />
-
-          <div>
-            <label className="flex items-center gap-2 mb-4">
-              <input
-                type="checkbox"
-                checked={formData.isActive}
-                onChange={(e) =>
-                  setFormData({ ...formData, isActive: e.target.checked })
-                }
-                className="w-4 h-4 rounded"
-              />
-              <span className="text-neutral-700 font-medium">
-                Active (visible on website)
-              </span>
-            </label>
-          </div>
-        </form>
-      </Modal>
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={async () => {
+          if (deleteId) {
+            await handleDelete(deleteId);
+            setDeleteId(null);
+          }
+        }}
+        title="Delete Content"
+        message="This content section will be permanently deleted. This action cannot be undone."
+      />
     </DashboardLayout>
   );
 }

@@ -3,38 +3,22 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Textarea } from "@/components/ui/Textarea";
-import { RichTextEditor } from "@/components/ui/RichTextEditor";
-import { Modal } from "@/components/ui/Modal";
 import { LoadingSpinner } from "@/components/ui/Loading";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
 import { apiService } from "@/lib/api";
 import { Blog } from "@/types";
-import { formatDate, generateSlug } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { ImageUpload } from "@/components/ui/ImageUpload";
 import { Edit2, Trash2, Plus, Search } from "lucide-react";
+import Link from "next/link";
 
 export default function BlogsPage() {
   const { addToast } = useAppStore();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    content: "",
-    slug: "",
-    metaTitle: "",
-    metaDescription: "",
-    image: "",
-    tags: [] as string[],
-    newTag: "",
-    isPublished: false,
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBlogs();
@@ -55,121 +39,16 @@ export default function BlogsPage() {
     }
   };
 
-  const handleOpenModal = (item?: Blog) => {
-    if (item) {
-      setIsEditMode(true);
-      setSelectedBlog(item);
-      setFormData({
-        title: item.title,
-        content: item.content,
-        slug: item.slug,
-        metaTitle: item.metaTitle || "",
-        metaDescription: item.metaDescription || "",
-        image: item.image || "",
-        tags: item.tags,
-        newTag: "",
-        isPublished: item.isPublished,
-      });
-    } else {
-      setIsEditMode(false);
-      setSelectedBlog(null);
-      setFormData({
-        title: "",
-        content: "",
-        slug: "",
-        metaTitle: "",
-        metaDescription: "",
-        image: "",
-        tags: [],
-        newTag: "",
-        isPublished: false,
-      });
-    }
-    setErrors({});
-    setIsModalOpen(true);
-  };
-
-  const handleAddTag = () => {
-    if (formData.newTag.trim()) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, prev.newTag],
-        newTag: "",
-      }));
-    }
-  };
-
-  const handleRemoveTag = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      tags: prev.tags.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleTitleChange = (title: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      title,
-      slug: !isEditMode ? generateSlug(title) : prev.slug,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.title) newErrors.title = "Title is required";
-    if (!formData.content) newErrors.content = "Content is required";
-    if (!formData.tags.length) newErrors.tags = "At least one tag is required";
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
+  const handleDelete = async (id: string) => {
     try {
-      const submitData = {
-        title: formData.title,
-        content: formData.content,
-        slug: formData.slug || generateSlug(formData.title),
-        metaTitle: formData.metaTitle || formData.title,
-        metaDescription:
-          formData.metaDescription ||
-          formData.content.substring(0, 160),
-        image: formData.image,
-        tags: formData.tags,
-        isPublished: formData.isPublished,
-      };
-
-      if (isEditMode && selectedBlog) {
-        await apiService.updateBlog(selectedBlog.id, submitData);
-        addToast("Blog updated successfully", "success");
-      } else {
-        await apiService.createBlog(submitData);
-        addToast("Blog created successfully", "success");
-      }
-
-      setIsModalOpen(false);
+      await apiService.deleteBlog(id);
+      addToast("Blog deleted successfully", "success");
       fetchBlogs();
     } catch (error: any) {
-      const errorMsg =
-        error.response?.data?.message || "Operation failed. Please try again.";
-      addToast(errorMsg, "error");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this blog article?")) {
-      try {
-        await apiService.deleteBlog(id);
-        addToast("Blog deleted successfully", "success");
-        fetchBlogs();
-      } catch (error: any) {
-        addToast(
-          error.response?.data?.message || "Failed to delete blog",
-          "error"
-        );
-      }
+      addToast(
+        error.response?.data?.message || "Failed to delete blog",
+        "error"
+      );
     }
   };
 
@@ -196,10 +75,12 @@ export default function BlogsPage() {
               Create and manage blog content
             </p>
           </div>
-          <Button onClick={() => handleOpenModal()}>
-            <Plus size={20} />
-            New Article
-          </Button>
+          <Link href="/dashboard/blogs/new">
+            <Button>
+              <Plus size={20} />
+              New Article
+            </Button>
+          </Link>
         </div>
 
         {/* Search */}
@@ -292,14 +173,14 @@ export default function BlogsPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => handleOpenModal(item)}
+                      <Link
+                        href={`/dashboard/blogs/${item.id}/edit`}
                         className="p-2 hover:bg-neutral-200 rounded-lg transition-colors"
                       >
                         <Edit2 size={18} className="text-neutral-600" />
-                      </button>
+                      </Link>
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => setDeleteId(item.id)}
                         className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                       >
                         <Trash2 size={18} className="text-red-600" />
@@ -319,138 +200,18 @@ export default function BlogsPage() {
         </div>
       </div>
 
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={isEditMode ? "Edit Blog Article" : "Create New Blog Article"}
-        size="xl"
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit}>
-              {isEditMode ? "Update" : "Publish"}
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
-          <Input
-            label="Blog Title"
-            value={formData.title}
-            onChange={(e) => handleTitleChange(e.target.value)}
-            error={errors.title}
-            placeholder="e.g., Top 10 Places to Visit in Egypt"
-          />
-
-          <Input
-            label="Slug (URL)"
-            value={formData.slug}
-            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-            placeholder="top-10-places-egypt"
-            hint="Auto-generated from title"
-          />
-
-          <RichTextEditor
-            label="Content"
-            value={formData.content}
-            onChange={(html) => setFormData({ ...formData, content: html })}
-            error={errors.content}
-            placeholder="Write your blog content here..."
-          />
-
-          <Input
-            label="Meta Title (SEO)"
-            value={formData.metaTitle}
-            onChange={(e) =>
-              setFormData({ ...formData, metaTitle: e.target.value })
-            }
-            placeholder="Leave empty to use title"
-          />
-
-          <Textarea
-            label="Meta Description (SEO)"
-            value={formData.metaDescription}
-            onChange={(e) =>
-              setFormData({ ...formData, metaDescription: e.target.value })
-            }
-            placeholder="Leave empty to auto-generate from content"
-            className="min-h-20"
-          />
-
-          <ImageUpload
-            label="Cover Image"
-            value={formData.image}
-            onChange={(url) => setFormData({ ...formData, image: url })}
-          />
-
-          {/* Tags */}
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">
-              Tags
-            </label>
-            <div className="flex gap-2 mb-3">
-              <Input
-                value={formData.newTag}
-                onChange={(e) =>
-                  setFormData({ ...formData, newTag: e.target.value })
-                }
-                placeholder="Add tag (e.g., Travel)"
-                className="flex-1"
-              />
-              <Button
-                type="button"
-                size="sm"
-                onClick={handleAddTag}
-                variant="secondary"
-              >
-                Add
-              </Button>
-            </div>
-
-            {errors.tags && (
-              <p className="text-red-500 text-sm mb-2">{errors.tags}</p>
-            )}
-
-            <div className="flex flex-wrap gap-2">
-              {formData.tags.map((tag, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(i)}
-                    className="text-primary-700 hover:text-primary-900 font-bold"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Status */}
-          <div>
-            <label className="flex items-center gap-2 mb-4">
-              <input
-                type="checkbox"
-                checked={formData.isPublished}
-                onChange={(e) =>
-                  setFormData({ ...formData, isPublished: e.target.checked })
-                }
-                className="w-4 h-4 rounded"
-              />
-              <span className="text-neutral-700 font-medium">
-                Publish immediately
-              </span>
-            </label>
-          </div>
-        </form>
-      </Modal>
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={async () => {
+          if (deleteId) {
+            await handleDelete(deleteId);
+            setDeleteId(null);
+          }
+        }}
+        title="Delete Blog Article"
+        message="This blog article will be permanently deleted. This action cannot be undone."
+      />
     </DashboardLayout>
   );
 }

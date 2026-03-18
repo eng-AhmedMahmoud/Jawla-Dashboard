@@ -3,14 +3,15 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Modal } from "@/components/ui/Modal";
-import { ImageUpload } from "@/components/ui/ImageUpload";
 import { LoadingSpinner } from "@/components/ui/Loading";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
 import { apiService } from "@/lib/api";
 import { HeroSlider } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Edit2,
   Trash2,
@@ -23,22 +24,11 @@ import {
 
 export default function HeroSlidersPage() {
   const { addToast } = useAppStore();
+  const router = useRouter();
   const [sliders, setSliders] = useState<HeroSlider[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSlider, setSelectedSlider] = useState<HeroSlider | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    titleAr: "",
-    titleEn: "",
-    image: "",
-    linkUrl: "",
-    order: 1,
-    isActive: true,
-  });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSliders();
@@ -61,83 +51,16 @@ export default function HeroSlidersPage() {
     }
   };
 
-  const handleOpenModal = (item?: HeroSlider) => {
-    if (item) {
-      setIsEditMode(true);
-      setSelectedSlider(item);
-      setFormData({
-        titleAr: item.titleAr,
-        titleEn: item.titleEn,
-        image: item.image,
-        linkUrl: item.linkUrl,
-        order: item.order,
-        isActive: item.isActive,
-      });
-    } else {
-      setIsEditMode(false);
-      setSelectedSlider(null);
-      setFormData({
-        titleAr: "",
-        titleEn: "",
-        image: "",
-        linkUrl: "",
-        order: sliders.length + 1,
-        isActive: true,
-      });
-    }
-    setErrors({});
-    setIsModalOpen(true);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const newErrors: Record<string, string> = {};
-
-    if (!formData.titleAr) newErrors.titleAr = "Arabic title is required";
-    if (!formData.titleEn) newErrors.titleEn = "English title is required";
-    if (!formData.image) newErrors.image = "Image is required";
-    if (!formData.linkUrl) newErrors.linkUrl = "Link URL is required";
-    if (!formData.order || formData.order < 1)
-      newErrors.order = "Order must be at least 1";
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    setSubmitting(true);
+  const handleDelete = async (id: string) => {
     try {
-      if (isEditMode && selectedSlider) {
-        await apiService.updateHeroSlider(selectedSlider.id, formData);
-        addToast("Slider updated successfully", "success");
-      } else {
-        await apiService.createHeroSlider(formData);
-        addToast("Slider created successfully", "success");
-      }
-
-      setIsModalOpen(false);
+      await apiService.deleteHeroSlider(id);
+      addToast("Slider deleted successfully", "success");
       fetchSliders();
     } catch (error: any) {
-      const errorMsg =
-        error.response?.data?.message || "Operation failed. Please try again.";
-      addToast(errorMsg, "error");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this slider?")) {
-      try {
-        await apiService.deleteHeroSlider(id);
-        addToast("Slider deleted successfully", "success");
-        fetchSliders();
-      } catch (error: any) {
-        addToast(
-          error.response?.data?.message || "Failed to delete slider",
-          "error"
-        );
-      }
+      addToast(
+        error.response?.data?.message || "Failed to delete slider",
+        "error"
+      );
     }
   };
 
@@ -155,6 +78,12 @@ export default function HeroSlidersPage() {
         "error"
       );
     }
+  };
+
+  const resolveImageUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http")) return url;
+    return `https://back-jawla.tajera.net${url}`;
   };
 
   const filteredSliders = sliders.filter((item) => {
@@ -185,10 +114,12 @@ export default function HeroSlidersPage() {
               Manage the homepage hero slider images and content
             </p>
           </div>
-          <Button onClick={() => handleOpenModal()}>
-            <Plus size={20} />
-            New Slider
-          </Button>
+          <Link href="/dashboard/hero-sliders/new">
+            <Button>
+              <Plus size={20} />
+              New Slider
+            </Button>
+          </Link>
         </div>
 
         {/* Search */}
@@ -253,11 +184,7 @@ export default function HeroSlidersPage() {
                   <td className="px-6 py-4">
                     <div className="w-24 h-14 rounded-lg overflow-hidden bg-neutral-100">
                       <img
-                        src={
-                          item.image.startsWith("http")
-                            ? item.image
-                            : `https://back-jawla.tajera.net${item.image}`
-                        }
+                        src={resolveImageUrl(item.image)}
                         alt={item.titleEn}
                         className="w-full h-full object-cover"
                       />
@@ -299,14 +226,14 @@ export default function HeroSlidersPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => handleOpenModal(item)}
+                      <Link
+                        href={`/dashboard/hero-sliders/${item.id}/edit`}
                         className="p-2 hover:bg-neutral-200 rounded-lg transition-colors"
                       >
                         <Edit2 size={18} className="text-neutral-600" />
-                      </button>
+                      </Link>
                       <button
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => setDeleteId(item.id)}
                         className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                       >
                         <Trash2 size={18} className="text-red-600" />
@@ -326,99 +253,18 @@ export default function HeroSlidersPage() {
         </div>
       </div>
 
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={isEditMode ? "Edit Slider" : "Create New Slider"}
-        size="lg"
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} loading={submitting}>
-              {isEditMode ? "Update" : "Create"}
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Title (English)"
-            value={formData.titleEn}
-            onChange={(e) =>
-              setFormData({ ...formData, titleEn: e.target.value })
-            }
-            error={errors.titleEn}
-            placeholder="e.g. Discover Beautiful Egypt"
-          />
-
-          <Input
-            label="Title (Arabic)"
-            value={formData.titleAr}
-            onChange={(e) =>
-              setFormData({ ...formData, titleAr: e.target.value })
-            }
-            error={errors.titleAr}
-            placeholder="مثال: اكتشف مصر الجميلة"
-            dir="rtl"
-          />
-
-          <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
-              Slider Image
-            </label>
-            <ImageUpload
-              value={formData.image}
-              onChange={(url) => setFormData({ ...formData, image: url })}
-            />
-            {errors.image && (
-              <p className="text-red-500 text-sm mt-1">{errors.image}</p>
-            )}
-          </div>
-
-          <Input
-            label="Link URL"
-            value={formData.linkUrl}
-            onChange={(e) =>
-              setFormData({ ...formData, linkUrl: e.target.value })
-            }
-            error={errors.linkUrl}
-            placeholder="e.g. /packages?type=HAJJ"
-          />
-
-          <Input
-            label="Display Order"
-            type="number"
-            value={formData.order.toString()}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                order: parseInt(e.target.value) || 1,
-              })
-            }
-            error={errors.order}
-            min={1}
-          />
-
-          <div>
-            <label className="flex items-center gap-2 mb-4">
-              <input
-                type="checkbox"
-                checked={formData.isActive}
-                onChange={(e) =>
-                  setFormData({ ...formData, isActive: e.target.checked })
-                }
-                className="w-4 h-4 rounded"
-              />
-              <span className="text-neutral-700 font-medium">
-                Active (visible on website)
-              </span>
-            </label>
-          </div>
-        </form>
-      </Modal>
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={async () => {
+          if (deleteId) {
+            await handleDelete(deleteId);
+            setDeleteId(null);
+          }
+        }}
+        title="Delete Slider"
+        message="This hero slider will be permanently deleted. This action cannot be undone."
+      />
     </DashboardLayout>
   );
 }

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { LoadingSpinner } from "@/components/ui/Loading";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
 import { apiService } from "@/lib/api";
 import { User } from "@/types";
@@ -28,6 +29,7 @@ export default function UsersPage() {
     password: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -114,17 +116,15 @@ export default function UsersPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this user?")) {
-      try {
-        await apiService.deleteUser(id);
-        addToast("User deleted successfully", "success");
-        fetchUsers();
-      } catch (error: any) {
-        addToast(
-          error.response?.data?.message || "Failed to delete user",
-          "error"
-        );
-      }
+    try {
+      await apiService.deleteUser(id);
+      addToast("User deleted successfully", "success");
+      fetchUsers();
+    } catch (error: any) {
+      addToast(
+        error.response?.data?.message || "Failed to delete user",
+        "error"
+      );
     }
   };
 
@@ -220,7 +220,7 @@ export default function UsersPage() {
                         <Edit2 size={18} className="text-neutral-600" />
                       </button>
                       <button
-                        onClick={() => handleDelete(user.id)}
+                        onClick={() => setDeleteId(user.id)}
                         className="p-2 hover:bg-red-100 rounded-lg transition-colors"
                       >
                         <Trash2 size={18} className="text-red-600" />
@@ -321,6 +321,19 @@ export default function UsersPage() {
           )}
         </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={!!deleteId}
+        onClose={() => setDeleteId(null)}
+        onConfirm={async () => {
+          if (deleteId) {
+            await handleDelete(deleteId);
+            setDeleteId(null);
+          }
+        }}
+        title="Delete User"
+        message="This user account will be permanently deleted. This action cannot be undone."
+      />
     </DashboardLayout>
   );
 }
