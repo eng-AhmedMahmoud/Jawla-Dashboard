@@ -19,8 +19,13 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
   const [previewUrl, setPreviewUrl] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Show server URL or local preview
-  const displayUrl = value || previewUrl;
+  // Show server URL or local preview — resolve relative paths against the API
+  const resolveUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http") || url.startsWith("blob:")) return url;
+    return `https://back-jawla.tajera.net${url}`;
+  };
+  const displayUrl = resolveUrl(value) || previewUrl;
 
   const handleFile = useCallback(
     async (file: File) => {
