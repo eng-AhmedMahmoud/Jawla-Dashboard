@@ -52,9 +52,13 @@ export default function BlogsPage() {
     }
   };
 
-  const filteredBlogs = blogs.filter((item) =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredBlogs = blogs.filter((item) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      item.titleEn.toLowerCase().includes(term) ||
+      item.titleAr.toLowerCase().includes(term)
+    );
+  });
 
   if (loading) {
     return (
@@ -124,7 +128,7 @@ export default function BlogsPage() {
                       {item.image && (
                         <img
                           src={item.image}
-                          alt={item.title}
+                          alt={item.titleEn}
                           className="w-12 h-12 rounded object-cover"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src =
@@ -134,7 +138,7 @@ export default function BlogsPage() {
                       )}
                       <div>
                         <p className="font-medium text-neutral-900">
-                          {item.title}
+                          {item.titleEn}
                         </p>
                         <p className="text-xs text-neutral-500">{item.slug}</p>
                       </div>

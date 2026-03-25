@@ -53,7 +53,8 @@ export default function PackagesPage() {
   };
 
   const filteredPackages = packages.filter((pkg) =>
-    pkg.title.toLowerCase().includes(searchTerm.toLowerCase())
+    pkg.titleEn.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    pkg.titleAr.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -100,7 +101,7 @@ export default function PackagesPage() {
                 {pkg.image ? (
                   <img
                     src={pkg.image}
-                    alt={pkg.title}
+                    alt={pkg.titleEn}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
@@ -125,8 +126,8 @@ export default function PackagesPage() {
               </div>
 
               <div className="p-5">
-                <h3 className="font-bold text-neutral-900 mb-2 truncate">{pkg.title}</h3>
-                <p className="text-sm text-neutral-600 mb-4 line-clamp-2">{pkg.description}</p>
+                <h3 className="font-bold text-neutral-900 mb-2 truncate">{pkg.titleEn}</h3>
+                <p className="text-sm text-neutral-600 mb-4 line-clamp-2">{pkg.descriptionEn}</p>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
@@ -142,14 +143,14 @@ export default function PackagesPage() {
                   <div>
                     <p className="text-neutral-600 text-sm mb-2">Services</p>
                     <div className="flex flex-wrap gap-1">
-                      {pkg.includedServices.slice(0, 2).map((service, i) => (
+                      {pkg.includedServicesEn.slice(0, 2).map((service, i) => (
                         <span key={i} className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">
                           {service}
                         </span>
                       ))}
-                      {pkg.includedServices.length > 2 && (
+                      {pkg.includedServicesEn.length > 2 && (
                         <span className="text-xs bg-neutral-100 text-neutral-600 px-2 py-1 rounded">
-                          +{pkg.includedServices.length - 2} more
+                          +{pkg.includedServicesEn.length - 2} more
                         </span>
                       )}
                     </div>

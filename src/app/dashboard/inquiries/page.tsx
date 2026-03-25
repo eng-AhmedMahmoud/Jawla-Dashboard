@@ -98,8 +98,8 @@ export default function InquiriesPage() {
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.phone.includes(searchTerm) ||
       (item.whatsapp && item.whatsapp.includes(searchTerm)) ||
-      (item.package?.title &&
-        item.package.title.toLowerCase().includes(searchTerm.toLowerCase()));
+      (item.package?.titleEn &&
+        item.package.titleEn.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus =
       statusFilter === "ALL" || item.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -111,7 +111,7 @@ export default function InquiriesPage() {
       Phone: inq.phone,
       WhatsApp: inq.whatsapp || "-",
       Travelers: inq.travelers,
-      Package: inq.package?.title || inq.packageId,
+      Package: inq.package?.titleEn || inq.packageId,
       Status: inq.status,
       "Created At": inq.createdAt
         ? formatDateTime(inq.createdAt)
@@ -299,7 +299,7 @@ export default function InquiriesPage() {
                       <div className="flex items-center gap-2">
                         <Package size={16} className="text-neutral-400" />
                         <span className="text-sm text-neutral-700 max-w-[200px] truncate">
-                          {item.package?.title || item.packageId}
+                          {item.package?.titleEn || item.packageId}
                         </span>
                       </div>
                     </td>

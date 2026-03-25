@@ -19,11 +19,15 @@ export default function NewBlogPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    content: "",
+    titleEn: "",
+    titleAr: "",
+    contentEn: "",
+    contentAr: "",
     slug: "",
-    metaTitle: "",
-    metaDescription: "",
+    metaTitleEn: "",
+    metaTitleAr: "",
+    metaDescriptionEn: "",
+    metaDescriptionAr: "",
     image: "",
     tags: [] as string[],
     newTag: "",
@@ -48,11 +52,11 @@ export default function NewBlogPage() {
     }));
   };
 
-  const handleTitleChange = (title: string) => {
+  const handleTitleEnChange = (titleEn: string) => {
     setFormData((prev) => ({
       ...prev,
-      title,
-      slug: generateSlug(title),
+      titleEn,
+      slug: generateSlug(titleEn),
     }));
   };
 
@@ -60,8 +64,12 @@ export default function NewBlogPage() {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 
-    if (!formData.title) newErrors.title = "Title is required";
-    if (!formData.content) newErrors.content = "Content is required";
+    if (!formData.titleEn) newErrors.titleEn = "English title is required";
+    if (!formData.titleAr) newErrors.titleAr = "Arabic title is required";
+    if (!formData.contentEn)
+      newErrors.contentEn = "English content is required";
+    if (!formData.contentAr)
+      newErrors.contentAr = "Arabic content is required";
     if (!formData.tags.length) newErrors.tags = "At least one tag is required";
 
     if (Object.keys(newErrors).length > 0) {
@@ -72,12 +80,19 @@ export default function NewBlogPage() {
     setSubmitting(true);
     try {
       await apiService.createBlog({
-        title: formData.title,
-        content: formData.content,
-        slug: formData.slug || generateSlug(formData.title),
-        metaTitle: formData.metaTitle || formData.title,
-        metaDescription:
-          formData.metaDescription || formData.content.substring(0, 160),
+        titleEn: formData.titleEn,
+        titleAr: formData.titleAr,
+        contentEn: formData.contentEn,
+        contentAr: formData.contentAr,
+        slug: formData.slug || generateSlug(formData.titleEn),
+        metaTitleEn: formData.metaTitleEn || formData.titleEn,
+        metaTitleAr: formData.metaTitleAr || formData.titleAr,
+        metaDescriptionEn:
+          formData.metaDescriptionEn ||
+          formData.contentEn.substring(0, 160),
+        metaDescriptionAr:
+          formData.metaDescriptionAr ||
+          formData.contentAr.substring(0, 160),
         image: formData.image,
         tags: formData.tags,
         isPublished: formData.isPublished,
@@ -117,11 +132,18 @@ export default function NewBlogPage() {
         {/* Form */}
         <div className="card p-6">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {/* ── English Content ── */}
+            <div className="border-b border-neutral-200 pb-2">
+              <h2 className="text-lg font-semibold text-neutral-800">
+                English Content
+              </h2>
+            </div>
+
             <Input
-              label="Blog Title"
-              value={formData.title}
-              onChange={(e) => handleTitleChange(e.target.value)}
-              error={errors.title}
+              label="Title (English)"
+              value={formData.titleEn}
+              onChange={(e) => handleTitleEnChange(e.target.value)}
+              error={errors.titleEn}
               placeholder="e.g., Top 10 Places to Visit in Egypt"
             />
 
@@ -132,37 +154,100 @@ export default function NewBlogPage() {
                 setFormData({ ...formData, slug: e.target.value })
               }
               placeholder="top-10-places-egypt"
-              hint="Auto-generated from title"
+              hint="Auto-generated from English title"
             />
 
             <RichTextEditor
-              label="Content"
-              value={formData.content}
+              label="Content (English)"
+              value={formData.contentEn}
               onChange={(html) =>
-                setFormData({ ...formData, content: html })
+                setFormData({ ...formData, contentEn: html })
               }
-              error={errors.content}
-              placeholder="Write your blog content here..."
+              error={errors.contentEn}
+              placeholder="Write your blog content in English..."
             />
 
             <Input
-              label="Meta Title (SEO)"
-              value={formData.metaTitle}
+              label="Meta Title - English"
+              value={formData.metaTitleEn}
               onChange={(e) =>
-                setFormData({ ...formData, metaTitle: e.target.value })
+                setFormData({ ...formData, metaTitleEn: e.target.value })
               }
-              placeholder="Leave empty to use title"
+              placeholder="Leave empty to use English title"
             />
 
             <Textarea
-              label="Meta Description (SEO)"
-              value={formData.metaDescription}
+              label="Meta Description - English"
+              value={formData.metaDescriptionEn}
               onChange={(e) =>
-                setFormData({ ...formData, metaDescription: e.target.value })
+                setFormData({
+                  ...formData,
+                  metaDescriptionEn: e.target.value,
+                })
               }
-              placeholder="Leave empty to auto-generate from content"
+              placeholder="Leave empty to auto-generate from English content"
               className="min-h-20"
             />
+
+            {/* ── Arabic Content ── */}
+            <div className="border-b border-neutral-200 pb-2 pt-4">
+              <h2 className="text-lg font-semibold text-neutral-800">
+                Arabic Content (المحتوى العربي)
+              </h2>
+            </div>
+
+            <Input
+              label="العنوان (Arabic)"
+              value={formData.titleAr}
+              onChange={(e) =>
+                setFormData({ ...formData, titleAr: e.target.value })
+              }
+              error={errors.titleAr}
+              placeholder="مثال: أفضل 10 أماكن للزيارة في مصر"
+              dir="rtl"
+            />
+
+            <RichTextEditor
+              label="Content (Arabic)"
+              value={formData.contentAr}
+              onChange={(html) =>
+                setFormData({ ...formData, contentAr: html })
+              }
+              error={errors.contentAr}
+              placeholder="اكتب محتوى المدونة بالعربية..."
+              dir="rtl"
+            />
+
+            <Input
+              label="Meta Title - Arabic"
+              value={formData.metaTitleAr}
+              onChange={(e) =>
+                setFormData({ ...formData, metaTitleAr: e.target.value })
+              }
+              placeholder="اتركه فارغاً لاستخدام العنوان العربي"
+              dir="rtl"
+            />
+
+            <Textarea
+              label="Meta Description - Arabic"
+              value={formData.metaDescriptionAr}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  metaDescriptionAr: e.target.value,
+                })
+              }
+              placeholder="اتركه فارغاً للتوليد التلقائي من المحتوى العربي"
+              className="min-h-20"
+              dir="rtl"
+            />
+
+            {/* ── Shared Fields ── */}
+            <div className="border-b border-neutral-200 pb-2 pt-4">
+              <h2 className="text-lg font-semibold text-neutral-800">
+                Shared Settings
+              </h2>
+            </div>
 
             <ImageUpload
               label="Cover Image"

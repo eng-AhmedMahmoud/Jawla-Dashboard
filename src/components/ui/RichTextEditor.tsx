@@ -36,6 +36,7 @@ interface RichTextEditorProps {
   error?: string;
   placeholder?: string;
   className?: string;
+  dir?: "ltr" | "rtl";
 }
 
 export function RichTextEditor({
@@ -45,6 +46,7 @@ export function RichTextEditor({
   error,
   placeholder = "Write your content here...",
   className,
+  dir,
 }: RichTextEditorProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -315,7 +317,9 @@ export function RichTextEditor({
         </div>
 
         {/* Editor Content */}
-        <EditorContent editor={editor} />
+        <div dir={dir}>
+          <EditorContent editor={editor} />
+        </div>
       </div>
 
       {uploading && (
