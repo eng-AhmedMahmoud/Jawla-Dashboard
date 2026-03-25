@@ -9,6 +9,7 @@ import {
   FileText,
   Images,
   Info,
+  HelpCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -22,6 +23,7 @@ const navigation = [
   { name: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
   { name: "Hero Sliders", href: "/dashboard/hero-sliders", icon: Images },
   { name: "About Page", href: "/dashboard/about", icon: Info },
+  { name: "FAQ Page", href: "/dashboard/faq", icon: HelpCircle },
   { name: "Content", href: "/dashboard/content", icon: FileText },
 ];
 

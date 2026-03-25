@@ -281,6 +281,42 @@ class ApiService {
     return response.data;
   }
 
+  // FAQ Methods
+  async getFaqPage() {
+    const response = await this.api.get("/faq");
+    return response.data;
+  }
+
+  async getFaqConfig() {
+    const response = await this.api.get("/faq/config");
+    return response.data;
+  }
+
+  async updateFaqConfig(data: any) {
+    const response = await this.api.patch("/faq/config", data);
+    return response.data;
+  }
+
+  async getFaqItemsAdmin() {
+    const response = await this.api.get("/faq/admin/items");
+    return response.data;
+  }
+
+  async createFaqItem(data: any) {
+    const response = await this.api.post("/faq/items", data);
+    return response.data;
+  }
+
+  async updateFaqItem(id: string, data: any) {
+    const response = await this.api.patch(`/faq/items/${id}`, data);
+    return response.data;
+  }
+
+  async deleteFaqItem(id: string) {
+    const response = await this.api.delete(`/faq/items/${id}`);
+    return response.data;
+  }
+
   // Hero Slider Methods
   async getAllHeroSliders() {
     const response = await this.api.get("/hero-sliders/admin/all");

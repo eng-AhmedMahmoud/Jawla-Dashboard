@@ -47,30 +47,38 @@ export type PackageType = "GENERAL" | "HAJJ" | "UMRAH";
 
 export interface Package {
   id: string;
-  title: string;
-  description: string;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
   price: number;
   currency?: string;
   duration: string;
   image: string;
   isFeatured?: boolean;
   type: PackageType;
-  includedServices: string[];
+  rating?: number;
+  reviewsCount?: number;
+  includedServicesAr: string[];
+  includedServicesEn: string[];
   slug?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
 export interface CreatePackageDto {
-  title: string;
-  description: string;
+  titleAr: string;
+  titleEn: string;
+  descriptionAr: string;
+  descriptionEn: string;
   price: number;
   currency?: string;
   duration: string;
   image: string;
   isFeatured?: boolean;
   type: PackageType;
-  includedServices: string[];
+  includedServicesAr: string[];
+  includedServicesEn: string[];
 }
 
 export interface UpdatePackageDto extends Partial<CreatePackageDto> {}
@@ -78,11 +86,15 @@ export interface UpdatePackageDto extends Partial<CreatePackageDto> {}
 // Blog Models
 export interface Blog {
   id: string;
-  title: string;
-  content: string;
+  titleAr: string;
+  titleEn: string;
+  contentAr: string;
+  contentEn: string;
   slug: string;
-  metaTitle?: string;
-  metaDescription?: string;
+  metaTitleAr?: string;
+  metaTitleEn?: string;
+  metaDescriptionAr?: string;
+  metaDescriptionEn?: string;
   image?: string;
   tags: string[];
   isPublished: boolean;
@@ -91,11 +103,15 @@ export interface Blog {
 }
 
 export interface CreateBlogDto {
-  title: string;
-  content: string;
+  titleAr: string;
+  titleEn: string;
+  contentAr: string;
+  contentEn: string;
   slug?: string;
-  metaTitle?: string;
-  metaDescription?: string;
+  metaTitleAr?: string;
+  metaTitleEn?: string;
+  metaDescriptionAr?: string;
+  metaDescriptionEn?: string;
   image?: string;
   tags: string[];
   isPublished?: boolean;
@@ -228,6 +244,34 @@ export interface AboutPageData {
   visionMission: AboutCard[];
   values: AboutCard[];
   services: AboutCard[];
+}
+
+// FAQ Models
+export interface FaqConfig {
+  id: string;
+  heroTitleAr: string;
+  heroTitleEn: string;
+  heroSubtitleAr: string | null;
+  heroSubtitleEn: string | null;
+  heroIconUrl: string | null;
+  updatedAt: string;
+}
+
+export interface FaqItem {
+  id: string;
+  questionAr: string;
+  questionEn: string;
+  answerAr: string;
+  answerEn: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface FaqPageData {
+  config: FaqConfig;
+  items: FaqItem[];
 }
 
 // API Response Wrapper
