@@ -37,7 +37,6 @@ export default function FaqPageManagement() {
     heroTitleEn: "",
     heroSubtitleAr: "",
     heroSubtitleEn: "",
-    heroIconUrl: "",
   });
   const [configSaving, setConfigSaving] = useState(false);
 
@@ -75,7 +74,6 @@ export default function FaqPageManagement() {
           heroTitleEn: configData.heroTitleEn || "",
           heroSubtitleAr: configData.heroSubtitleAr || "",
           heroSubtitleEn: configData.heroSubtitleEn || "",
-          heroIconUrl: configData.heroIconUrl || "",
         });
       }
       setItems(Array.isArray(itemsData) ? itemsData : []);
@@ -296,14 +294,6 @@ export default function FaqPageManagement() {
                 dir="rtl"
               />
             </div>
-            <Input
-              label="Hero Icon (Lucide icon name)"
-              value={configForm.heroIconUrl}
-              onChange={(e) =>
-                setConfigForm({ ...configForm, heroIconUrl: e.target.value })
-              }
-              placeholder="e.g., help-circle"
-            />
 
             <div className="flex justify-end pt-4">
               <Button onClick={handleConfigSave} disabled={configSaving}>
