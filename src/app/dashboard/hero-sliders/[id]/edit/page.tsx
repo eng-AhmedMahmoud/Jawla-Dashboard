@@ -26,6 +26,10 @@ export default function EditHeroSliderPage() {
   const [formData, setFormData] = useState({
     titleAr: "",
     titleEn: "",
+    subtitleAr: "",
+    subtitleEn: "",
+    descriptionAr: "",
+    descriptionEn: "",
     image: "",
     linkUrl: "",
     order: 1,
@@ -44,6 +48,10 @@ export default function EditHeroSliderPage() {
         setFormData({
           titleAr: data.titleAr,
           titleEn: data.titleEn,
+          subtitleAr: data.subtitleAr || "",
+          subtitleEn: data.subtitleEn || "",
+          descriptionAr: data.descriptionAr || "",
+          descriptionEn: data.descriptionEn || "",
           image: data.image,
           linkUrl: data.linkUrl,
           order: data.order,
@@ -149,6 +157,56 @@ export default function EditHeroSliderPage() {
               placeholder="مثال: اكتشف مصر الجميلة"
               dir="rtl"
             />
+
+            <Input
+              label="Subtitle H2 (English)"
+              value={formData.subtitleEn}
+              onChange={(e) =>
+                setFormData({ ...formData, subtitleEn: e.target.value })
+              }
+              placeholder="e.g. Summer Deals (optional)"
+            />
+
+            <Input
+              label="Subtitle H2 (Arabic)"
+              value={formData.subtitleAr}
+              onChange={(e) =>
+                setFormData({ ...formData, subtitleAr: e.target.value })
+              }
+              placeholder="مثال: عروض الصيف (اختياري)"
+              dir="rtl"
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                Description (English)
+              </label>
+              <textarea
+                value={formData.descriptionEn}
+                onChange={(e) =>
+                  setFormData({ ...formData, descriptionEn: e.target.value })
+                }
+                placeholder="Optional description text for the slide"
+                rows={3}
+                className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+                Description (Arabic)
+              </label>
+              <textarea
+                value={formData.descriptionAr}
+                onChange={(e) =>
+                  setFormData({ ...formData, descriptionAr: e.target.value })
+                }
+                placeholder="وصف اختياري للشريحة"
+                rows={3}
+                dir="rtl"
+                className="w-full px-4 py-2.5 border border-neutral-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              />
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 mb-1.5">

@@ -1,23 +1,42 @@
 "use client";
 
 import React, { useCallback, useRef, useState } from "react";
-import { Upload, X, Image as ImageIcon, Loader2 } from "lucide-react";
+import {
+  Upload,
+  X,
+  Image as ImageIcon,
+  Loader2,
+  Crop,
+} from "lucide-react";
 import { apiService } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { ImageCropModal } from "./ImageCropModal";
 
 interface ImageUploadProps {
   label?: string;
   value: string;
   onChange: (url: string) => void;
   error?: string;
+  /** Default crop aspect ratio (0 = free). E.g. 16/9, 1, 4/3 */
+  aspectRatio?: number;
 }
 
-export function ImageUpload({ label, value, onChange, error }: ImageUploadProps) {
+export function ImageUpload({
+  label,
+  value,
+  onChange,
+  error,
+  aspectRatio,
+}: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Crop state
+  const [cropOpen, setCropOpen] = useState(false);
+  const [rawImageSrc, setRawImageSrc] = useState("");
 
   // Show server URL or local preview — resolve relative paths against the API
   const resolveUrl = (url: string) => {
@@ -27,8 +46,9 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
   };
   const displayUrl = resolveUrl(value) || previewUrl;
 
+  // ── File selection → open cropper ──
   const handleFile = useCallback(
-    async (file: File) => {
+    (file: File) => {
       if (!file.type.startsWith("image/")) {
         setUploadError("Please select an image file");
         return;
@@ -37,14 +57,26 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
         setUploadError("Image must be less than 5MB");
         return;
       }
-
       setUploadError("");
-      // Show instant local preview
-      const localUrl = URL.createObjectURL(file);
+      const objectUrl = URL.createObjectURL(file);
+      setRawImageSrc(objectUrl);
+      setCropOpen(true);
+    },
+    []
+  );
+
+  // ── After crop → upload the cropped file ──
+  const handleCropDone = useCallback(
+    async (croppedFile: File) => {
+      setCropOpen(false);
+
+      // Show local preview while uploading
+      const localUrl = URL.createObjectURL(croppedFile);
       setPreviewUrl(localUrl);
       setUploading(true);
+
       try {
-        const data = await apiService.uploadImage(file);
+        const data = await apiService.uploadImage(croppedFile);
         onChange(data.url);
         setPreviewUrl("");
         URL.revokeObjectURL(localUrl);
@@ -61,6 +93,30 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
     [onChange]
   );
 
+  // ── Re-crop an existing image ──
+  const handleRecrop = useCallback(async () => {
+    // If we still have the original source, reuse it
+    if (rawImageSrc) {
+      setCropOpen(true);
+      return;
+    }
+    // Otherwise fetch the current image as a blob so canvas can read it
+    if (displayUrl) {
+      try {
+        const res = await fetch(displayUrl);
+        const blob = await res.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        setRawImageSrc(objectUrl);
+        setCropOpen(true);
+      } catch {
+        // Fallback: try using the URL directly (may fail if CORS blocks canvas)
+        setRawImageSrc(displayUrl);
+        setCropOpen(true);
+      }
+    }
+  }, [rawImageSrc, displayUrl]);
+
+  // ── Drag & drop / file input ──
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
       e.preventDefault();
@@ -95,7 +151,9 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
     onChange("");
     setPreviewUrl("");
     setUploadError("");
-  }, [onChange]);
+    if (rawImageSrc.startsWith("blob:")) URL.revokeObjectURL(rawImageSrc);
+    setRawImageSrc("");
+  }, [onChange, rawImageSrc]);
 
   const displayError = error || uploadError;
 
@@ -131,7 +189,16 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
               <Loader2 size={32} className="text-white animate-spin" />
             </div>
           )}
+          {/* Hover overlay */}
           <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handleRecrop}
+              className="p-2 bg-white rounded-full text-neutral-700 hover:bg-neutral-100 transition-colors"
+              title="Crop image"
+            >
+              <Crop size={18} />
+            </button>
             <button
               type="button"
               onClick={() => inputRef.current?.click()}
@@ -166,7 +233,10 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
         >
           {uploading ? (
             <>
-              <Loader2 size={32} className="text-primary-500 animate-spin" />
+              <Loader2
+                size={32}
+                className="text-primary-500 animate-spin"
+              />
               <p className="text-sm text-neutral-600">Uploading...</p>
             </>
           ) : (
@@ -190,6 +260,15 @@ export function ImageUpload({ label, value, onChange, error }: ImageUploadProps)
       {displayError && (
         <p className="text-red-500 text-sm mt-1">{displayError}</p>
       )}
+
+      {/* Crop modal */}
+      <ImageCropModal
+        isOpen={cropOpen}
+        imageSrc={rawImageSrc}
+        onClose={() => setCropOpen(false)}
+        onCropDone={handleCropDone}
+        defaultAspect={aspectRatio}
+      />
     </div>
   );
 }

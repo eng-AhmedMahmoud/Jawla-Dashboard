@@ -173,7 +173,13 @@ export interface HeroSlider {
   id: string;
   titleAr: string;
   titleEn: string;
+  subtitleAr?: string;
+  subtitleEn?: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   image: string;
+  imageWidth?: number;
+  imageHeight?: number;
   linkUrl: string;
   order: number;
   isActive: boolean;
@@ -184,7 +190,13 @@ export interface HeroSlider {
 export interface CreateHeroSliderDto {
   titleAr: string;
   titleEn: string;
+  subtitleAr?: string;
+  subtitleEn?: string;
+  descriptionAr?: string;
+  descriptionEn?: string;
   image: string;
+  imageWidth?: number;
+  imageHeight?: number;
   linkUrl: string;
   order: number;
   isActive?: boolean;
