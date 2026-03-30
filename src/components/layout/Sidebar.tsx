@@ -11,6 +11,7 @@ import {
   Info,
   HelpCircle,
   Star,
+  Plane,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -23,6 +24,7 @@ const navigation = [
   { name: "Blogs", href: "/dashboard/blogs", icon: BookOpen },
   { name: "Inquiries", href: "/dashboard/inquiries", icon: MessageSquare },
   { name: "Hero Sliders", href: "/dashboard/hero-sliders", icon: Images },
+  { name: "Flights Page", href: "/dashboard/flights", icon: Plane },
   { name: "Hajj & Umrah", href: "/dashboard/hajj-umrah", icon: Star },
   { name: "About Page", href: "/dashboard/about", icon: Info },
   { name: "FAQ Page", href: "/dashboard/faq", icon: HelpCircle },

@@ -317,6 +317,68 @@ class ApiService {
     return response.data;
   }
 
+  // Flights Page Methods
+  async getFlightsPage() {
+    const response = await this.api.get("/flights");
+    return response.data;
+  }
+
+  async getFlightsConfig() {
+    const response = await this.api.get("/flights/config");
+    return response.data;
+  }
+
+  async updateFlightsConfig(data: any) {
+    const response = await this.api.patch("/flights/config", data);
+    return response.data;
+  }
+
+  async getFlightsWhyCards() {
+    const response = await this.api.get("/flights/why-cards");
+    return response.data;
+  }
+
+  async getFlightsWhyCardsAdmin() {
+    const response = await this.api.get("/flights/why-cards/admin");
+    return response.data;
+  }
+
+  async createFlightsWhyCard(data: any) {
+    const response = await this.api.post("/flights/why-cards", data);
+    return response.data;
+  }
+
+  async updateFlightsWhyCard(id: string, data: any) {
+    const response = await this.api.patch(`/flights/why-cards/${id}`, data);
+    return response.data;
+  }
+
+  async deleteFlightsWhyCard(id: string) {
+    const response = await this.api.delete(`/flights/why-cards/${id}`);
+    return response.data;
+  }
+
+  // Hajj & Umrah Page Methods
+  async getHajjUmrahPage() {
+    const response = await this.api.get("/hajj-umrah");
+    return response.data;
+  }
+
+  async getHajjUmrahAdmin() {
+    const response = await this.api.get("/hajj-umrah/admin");
+    return response.data;
+  }
+
+  async updateHajjUmrahConfig(data: any) {
+    const response = await this.api.patch("/hajj-umrah/admin/config", data);
+    return response.data;
+  }
+
+  async updateHajjUmrahCard(cardType: string, data: any) {
+    const response = await this.api.patch(`/hajj-umrah/admin/cards/${cardType}`, data);
+    return response.data;
+  }
+
   // Hero Slider Methods
   async getAllHeroSliders() {
     const response = await this.api.get("/hero-sliders/admin/all");

@@ -286,6 +286,74 @@ export interface FaqPageData {
   items: FaqItem[];
 }
 
+// Flights Page Models
+export interface FlightsConfig {
+  id: string;
+  heroTitleAr: string;
+  heroTitleEn: string;
+  heroSubtitleAr: string | null;
+  heroSubtitleEn: string | null;
+  heroImageUrl: string | null;
+  whyTitleAr: string | null;
+  whyTitleEn: string | null;
+  whyCardsLimit: number;
+  updatedAt: string;
+}
+
+export interface FlightsWhyCard {
+  id: string;
+  iconName: string | null;
+  iconColor: string | null;
+  titleAr: string;
+  titleEn: string;
+  bodyAr: string;
+  bodyEn: string;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface FlightsPageData {
+  config: FlightsConfig;
+  whyCards: FlightsWhyCard[];
+}
+
+// Hajj & Umrah Page Models
+export type HajjUmrahCardType = "HAJJ" | "UMRAH";
+
+export interface HajjUmrahConfig {
+  id: string;
+  heroTitleAr: string;
+  heroTitleEn: string;
+  heroDetailsAr: string | null;
+  heroDetailsEn: string | null;
+  updatedAt: string;
+}
+
+export interface HajjUmrahCard {
+  id: string;
+  cardType: HajjUmrahCardType;
+  titleAr: string;
+  titleEn: string;
+  imageUrl: string | null;
+  imageWidth: number | null;
+  imageHeight: number | null;
+  buttonTextAr: string | null;
+  buttonTextEn: string | null;
+  buttonUrl: string | null;
+  order: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface HajjUmrahPageData {
+  config: HajjUmrahConfig;
+  hajj: HajjUmrahCard;
+  umrah: HajjUmrahCard;
+}
+
 // API Response Wrapper
 export interface ApiResponse<T> {
   data?: T;
