@@ -358,6 +358,16 @@ class ApiService {
     return response.data;
   }
 
+  async getFlightsPopularRoutes() {
+    const response = await this.api.get("/flights/popular-routes");
+    return response.data;
+  }
+
+  async updateFlightsPopularRoute(id: string, data: any) {
+    const response = await this.api.patch(`/flights/popular-routes/${id}`, data);
+    return response.data;
+  }
+
   // Hajj & Umrah Page Methods
   async getHajjUmrahPage() {
     const response = await this.api.get("/hajj-umrah");

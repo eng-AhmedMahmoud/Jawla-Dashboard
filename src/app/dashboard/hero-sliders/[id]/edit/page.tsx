@@ -31,7 +31,6 @@ export default function EditHeroSliderPage() {
     descriptionAr: "",
     descriptionEn: "",
     image: "",
-    linkUrl: "",
     order: 1,
     isActive: true,
   });
@@ -53,7 +52,6 @@ export default function EditHeroSliderPage() {
           descriptionAr: data.descriptionAr || "",
           descriptionEn: data.descriptionEn || "",
           image: data.image,
-          linkUrl: data.linkUrl,
           order: data.order,
           isActive: data.isActive,
         });
@@ -80,7 +78,6 @@ export default function EditHeroSliderPage() {
     if (!formData.titleAr) newErrors.titleAr = "Arabic title is required";
     if (!formData.titleEn) newErrors.titleEn = "English title is required";
     if (!formData.image) newErrors.image = "Image is required";
-    if (!formData.linkUrl) newErrors.linkUrl = "Link URL is required";
     if (!formData.order || formData.order < 1)
       newErrors.order = "Order must be at least 1";
     else if (existingOrders.includes(formData.order))
@@ -220,16 +217,6 @@ export default function EditHeroSliderPage() {
                 <p className="text-red-500 text-sm mt-1">{errors.image}</p>
               )}
             </div>
-
-            <Input
-              label="Link URL"
-              value={formData.linkUrl}
-              onChange={(e) =>
-                setFormData({ ...formData, linkUrl: e.target.value })
-              }
-              error={errors.linkUrl}
-              placeholder="e.g. /packages?type=HAJJ"
-            />
 
             <Input
               label="Display Order"

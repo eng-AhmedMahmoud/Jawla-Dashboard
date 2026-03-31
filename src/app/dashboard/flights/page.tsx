@@ -22,9 +22,10 @@ import {
   Eye,
   EyeOff,
   GripVertical,
+  MapPin,
 } from "lucide-react";
 
-type ActiveTab = "config" | "why-cards";
+type ActiveTab = "config" | "why-cards" | "popular-routes";
 
 export default function FlightsPageManagement() {
   const { addToast } = useAppStore();
@@ -63,6 +64,18 @@ export default function FlightsPageManagement() {
   const [cardErrors, setCardErrors] = useState<Record<string, string>>({});
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
+  // Popular Routes state
+  const [popularRoutes, setPopularRoutes] = useState<any[]>([]);
+  const [isRouteModalOpen, setIsRouteModalOpen] = useState(false);
+  const [selectedRoute, setSelectedRoute] = useState<any>(null);
+  const [routeForm, setRouteForm] = useState({
+    titleAr: "",
+    titleEn: "",
+    price: 0,
+    currency: "EGP",
+    isFeatured: true,
+  });
+
   useEffect(() => {
     fetchAll();
   }, []);
@@ -70,9 +83,10 @@ export default function FlightsPageManagement() {
   const fetchAll = async () => {
     setLoading(true);
     try {
-      const [configData, cardsData] = await Promise.all([
+      const [configData, cardsData, routesData] = await Promise.all([
         apiService.getFlightsConfig(),
         apiService.getFlightsWhyCardsAdmin(),
+        apiService.getFlightsPopularRoutes(),
       ]);
       if (configData) {
         setConfig(configData);
@@ -88,6 +102,7 @@ export default function FlightsPageManagement() {
         });
       }
       setWhyCards(Array.isArray(cardsData) ? cardsData : []);
+      setPopularRoutes(Array.isArray(routesData) ? routesData : []);
     } catch (error: any) {
       addToast(
         error.response?.data?.message || "Failed to load Flights page data",
@@ -227,6 +242,53 @@ export default function FlightsPageManagement() {
     }
   };
 
+  // ─── Popular Route handlers ───
+  const handleOpenRouteModal = (route: any) => {
+    setSelectedRoute(route);
+    setRouteForm({
+      titleAr: route.titleAr || "",
+      titleEn: route.titleEn || "",
+      price: Math.round(route.price) || 0,
+      currency: route.currency || "EGP",
+      isFeatured: route.isFeatured ?? true,
+    });
+    setIsRouteModalOpen(true);
+  };
+
+  const handleRouteSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedRoute) return;
+    try {
+      await apiService.updateFlightsPopularRoute(selectedRoute.id, routeForm);
+      addToast("Route updated successfully", "success");
+      setIsRouteModalOpen(false);
+      fetchAll();
+    } catch (error: any) {
+      addToast(
+        error.response?.data?.message || "Failed to update route",
+        "error"
+      );
+    }
+  };
+
+  const handleToggleRouteFeatured = async (route: any) => {
+    try {
+      await apiService.updateFlightsPopularRoute(route.id, {
+        isFeatured: !route.isFeatured,
+      });
+      addToast(
+        `Route ${route.isFeatured ? "hidden from" : "shown on"} flights page`,
+        "success"
+      );
+      fetchAll();
+    } catch (error: any) {
+      addToast(
+        error.response?.data?.message || "Failed to update route",
+        "error"
+      );
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -238,6 +300,7 @@ export default function FlightsPageManagement() {
   const tabs: { key: ActiveTab; label: string; icon: React.ReactNode }[] = [
     { key: "config", label: "Page Config", icon: <Settings size={18} /> },
     { key: "why-cards", label: "Why Cards", icon: <LayoutGrid size={18} /> },
+    { key: "popular-routes", label: "Popular Routes", icon: <MapPin size={18} /> },
   ];
 
   return (
@@ -479,7 +542,176 @@ export default function FlightsPageManagement() {
             </div>
           </div>
         )}
+        {/* ─── POPULAR ROUTES TAB ─── */}
+        {activeTab === "popular-routes" && (
+          <div className="space-y-4">
+            <p className="text-sm text-neutral-500">
+              These are your existing packages shown as popular routes on the
+              Flights page. Edit their details or toggle featured visibility.
+            </p>
+
+            <div className="card overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-neutral-100">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-neutral-700">
+                      Title (EN)
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-neutral-700">
+                      Title (AR)
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-neutral-700">
+                      Price
+                    </th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-neutral-700">
+                      Featured
+                    </th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-neutral-700">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {popularRoutes.map((route) => (
+                    <tr
+                      key={route.id}
+                      className="border-t border-neutral-200 hover:bg-neutral-50"
+                    >
+                      <td className="px-6 py-4 text-sm text-neutral-700">
+                        {route.titleEn}
+                      </td>
+                      <td
+                        className="px-6 py-4 text-sm text-neutral-700"
+                        dir="rtl"
+                      >
+                        {route.titleAr}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-neutral-700 font-medium">
+                        {route.price?.toLocaleString()} {route.currency || "EGP"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => handleToggleRouteFeatured(route)}
+                          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                            route.isFeatured
+                              ? "bg-green-100 text-green-700 hover:bg-green-200"
+                              : "bg-neutral-200 text-neutral-600 hover:bg-neutral-300"
+                          }`}
+                        >
+                          {route.isFeatured ? (
+                            <Eye size={14} />
+                          ) : (
+                            <EyeOff size={14} />
+                          )}
+                          {route.isFeatured ? "Featured" : "Hidden"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <button
+                          onClick={() => handleOpenRouteModal(route)}
+                          className="p-2 hover:bg-neutral-200 rounded-lg transition-colors"
+                        >
+                          <Edit2 size={18} className="text-neutral-600" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {popularRoutes.length === 0 && (
+                <div className="text-center py-12">
+                  <p className="text-neutral-600">
+                    No packages found. Create packages first, then they will
+                    appear here as popular routes.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* ─── Route Edit Modal ─── */}
+      <Modal
+        isOpen={isRouteModalOpen}
+        onClose={() => setIsRouteModalOpen(false)}
+        title="Edit Popular Route"
+        size="lg"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setIsRouteModalOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleRouteSubmit}>Update</Button>
+          </>
+        }
+      >
+        <form
+          onSubmit={handleRouteSubmit}
+          className="space-y-4 max-h-[28rem] overflow-y-auto"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Title (English)"
+              value={routeForm.titleEn}
+              onChange={(e) =>
+                setRouteForm({ ...routeForm, titleEn: e.target.value })
+              }
+              placeholder="Saudi Arabia Trips"
+            />
+            <Input
+              label="Title (Arabic)"
+              value={routeForm.titleAr}
+              onChange={(e) =>
+                setRouteForm({ ...routeForm, titleAr: e.target.value })
+              }
+              placeholder="رحلات المملكة العربية السعودية"
+              dir="rtl"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Input
+              label="Price"
+              type="number"
+              value={routeForm.price.toString()}
+              onChange={(e) =>
+                setRouteForm({
+                  ...routeForm,
+                  price: parseInt(e.target.value) || 0,
+                })
+              }
+              placeholder="2500"
+            />
+            <Input
+              label="Currency"
+              value={routeForm.currency}
+              onChange={(e) =>
+                setRouteForm({ ...routeForm, currency: e.target.value })
+              }
+              placeholder="EGP"
+            />
+          </div>
+
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={routeForm.isFeatured}
+              onChange={(e) =>
+                setRouteForm({ ...routeForm, isFeatured: e.target.checked })
+              }
+              className="w-4 h-4 rounded"
+            />
+            <span className="text-neutral-700 font-medium">
+              Featured (visible on flights page)
+            </span>
+          </label>
+        </form>
+      </Modal>
 
       {/* ─── Why Card Modal ─── */}
       <Modal
