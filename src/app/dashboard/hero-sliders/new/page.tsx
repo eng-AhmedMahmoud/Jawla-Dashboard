@@ -47,7 +47,6 @@ export default function NewHeroSliderPage() {
 
     if (!formData.titleAr) newErrors.titleAr = "Arabic title is required";
     if (!formData.titleEn) newErrors.titleEn = "English title is required";
-    if (!formData.image) newErrors.image = "Image is required";
     if (!formData.order || formData.order < 1)
       newErrors.order = "Order must be at least 1";
     else if (existingOrders.includes(formData.order))

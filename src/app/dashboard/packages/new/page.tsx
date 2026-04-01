@@ -79,7 +79,6 @@ export default function NewPackagePage() {
     if (!formData.descriptionAr) newErrors.descriptionAr = "Arabic description is required";
     if (!formData.price) newErrors.price = "Price is required";
     if (!formData.duration) newErrors.duration = "Duration is required";
-    if (!formData.image) newErrors.image = "Image is required";
     if (!formData.type) newErrors.type = "Type is required";
     if (formData.includedServicesEn.length === 0)
       newErrors.includedServicesEn = "At least one English service is required";
