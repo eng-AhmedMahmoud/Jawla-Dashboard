@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
-import { apiService } from "@/lib/api";
+import { apiService, resolveImageUrl } from "@/lib/api";
 import { Blog } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -127,12 +127,12 @@ export default function BlogsPage() {
                     <div className="flex items-start gap-3">
                       {item.image && (
                         <img
-                          src={item.image}
+                          src={resolveImageUrl(item.image)}
                           alt={item.titleEn}
                           className="w-12 h-12 rounded object-cover"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src =
-                              "https://via.placeholder.com/48?text=Blog";
+                              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect fill='%23f5f5f5' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='sans-serif' font-size='10'%3EBlog%3C/text%3E%3C/svg%3E";
                           }}
                         />
                       )}

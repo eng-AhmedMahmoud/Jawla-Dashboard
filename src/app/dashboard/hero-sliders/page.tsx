@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
-import { apiService } from "@/lib/api";
+import { apiService, resolveImageUrl } from "@/lib/api";
 import { HeroSlider } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -80,11 +80,6 @@ export default function HeroSlidersPage() {
     }
   };
 
-  const resolveImageUrl = (url: string) => {
-    if (!url) return "";
-    if (url.startsWith("http")) return url;
-    return `https://back-jawla.tajera.net${url}`;
-  };
 
   const filteredSliders = sliders.filter((item) => {
     const matchesSearch =

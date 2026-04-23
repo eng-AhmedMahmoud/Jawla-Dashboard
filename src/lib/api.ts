@@ -1,8 +1,19 @@
 import axios, { AxiosInstance, AxiosError } from "axios";
 import { AuthResponse, LoginDto, RegisterDto } from "@/types";
 
-const API_BASE_URL =
+export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://back-jawla.tajera.net/api/v1";
+
+/**
+ * Resolve an image URL that may be relative (from Cloudflare R2 upload).
+ * Backend returns paths like "/upload/file/images/uuid.ext" which need
+ * the API base URL prepended (e.g. ".../api/v1/upload/file/...").
+ */
+export function resolveImageUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("data:")) return url;
+  return `${API_BASE_URL}${url}`;
+}
 
 class ApiService {
   private api: AxiosInstance;
@@ -420,16 +431,13 @@ class ApiService {
     const formData = new FormData();
     formData.append("file", file);
     const response = await this.api.post("/upload/image", formData, {
-      headers: { "Content-Type": undefined },
+      headers: { "Content-Type": "multipart/form-data" },
     });
-    // Backend returns relative URL like "/uploads/filename.jpg"
-    // Construct the full URL using the API base origin
-    const baseOrigin = API_BASE_URL.replace(/\/api\/v1$/, "");
+    // Backend returns relative URL like "/upload/file/images/uuid.ext"
+    // Resolve against API base URL (includes /api/v1 prefix)
     return {
       ...response.data,
-      url: response.data.url?.startsWith("http")
-        ? response.data.url
-        : `${baseOrigin}${response.data.url}`,
+      url: resolveImageUrl(response.data.url),
     };
   }
 
