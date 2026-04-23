@@ -423,8 +423,8 @@ class ApiService {
       headers: { "Content-Type": undefined },
     });
     // Backend returns relative URL like "/uploads/filename.jpg"
-    // Construct the full URL using the API base origin
-    const baseOrigin = API_BASE_URL.replace(/\/api\/v1$/, "");
+    // Construct the full URL using the API base origin (strip /api/v1 with or without trailing slash)
+    const baseOrigin = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
     return {
       ...response.data,
       url: response.data.url?.startsWith("http")

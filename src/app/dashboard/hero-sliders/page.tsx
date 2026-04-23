@@ -82,6 +82,9 @@ export default function HeroSlidersPage() {
 
   const resolveImageUrl = (url: string) => {
     if (!url) return "";
+    if (url.includes("localhost") && url.includes("/uploads/")) {
+      return `https://back-jawla.tajera.net${url.replace(/^https?:\/\/[^/]+/, "")}`;
+    }
     if (url.startsWith("http")) return url;
     return `https://back-jawla.tajera.net${url}`;
   };

@@ -41,7 +41,12 @@ export function ImageUpload({
   // Show server URL or local preview — resolve relative paths against the API
   const resolveUrl = (url: string) => {
     if (!url) return "";
-    if (url.startsWith("http") || url.startsWith("blob:")) return url;
+    if (url.startsWith("blob:") || url.startsWith("data:")) return url;
+    // Rewrite broken localhost URLs to production backend
+    if (url.includes("localhost") && url.includes("/uploads/")) {
+      return `https://back-jawla.tajera.net${url.replace(/^https?:\/\/[^/]+/, "")}`;
+    }
+    if (url.startsWith("http")) return url;
     return `https://back-jawla.tajera.net${url}`;
   };
   const displayUrl = resolveUrl(value) || previewUrl;
