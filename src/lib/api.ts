@@ -4,20 +4,14 @@ import { AuthResponse, LoginDto, RegisterDto } from "@/types";
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://back-jawla.tajera.net/api/v1";
 
-/** Base origin without the /api/v1 suffix */
-const API_ORIGIN = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
-
 /**
- * Resolve an image URL that may be relative.
- * - R2 paths like "/upload/file/images/uuid.ext" → prepend full API base URL
- * - Legacy paths like "/uploads/uuid.ext" → prepend origin only (served by ServeStaticModule)
+ * Resolve an image URL that may be relative (from Cloudflare R2 upload).
+ * Backend returns paths like "/upload/file/images/uuid.ext" which need
+ * the API base URL prepended (e.g. ".../api/v1/upload/file/...").
  */
 export function resolveImageUrl(url: string): string {
   if (!url) return "";
   if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("data:")) return url;
-  // Legacy uploads served at /uploads/ without /api/v1 prefix
-  if (url.startsWith("/uploads/")) return `${API_ORIGIN}${url}`;
-  // R2 proxy served at /api/v1/upload/file/...
   return `${API_BASE_URL}${url}`;
 }
 
