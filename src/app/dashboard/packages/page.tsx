@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
-import { apiService, resolveImageUrl } from "@/lib/api";
+import { apiService } from "@/lib/api";
 import { Package } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -100,12 +100,12 @@ export default function PackagesPage() {
               <div className="relative h-48 bg-neutral-200 overflow-hidden">
                 {pkg.image ? (
                   <img
-                    src={resolveImageUrl(pkg.image)}
+                    src={pkg.image}
                     alt={pkg.titleEn}
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
-                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect fill='%23f5f5f5' width='300' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='sans-serif' font-size='14'%3EPackage%3C/text%3E%3C/svg%3E";
+                        "https://via.placeholder.com/300x200?text=Package";
                     }}
                   />
                 ) : (

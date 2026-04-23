@@ -8,7 +8,7 @@ import {
   Loader2,
   Crop,
 } from "lucide-react";
-import { apiService, resolveImageUrl } from "@/lib/api";
+import { apiService } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { ImageCropModal } from "./ImageCropModal";
 
@@ -39,7 +39,12 @@ export function ImageUpload({
   const [rawImageSrc, setRawImageSrc] = useState("");
 
   // Show server URL or local preview — resolve relative paths against the API
-  const displayUrl = resolveImageUrl(value) || previewUrl;
+  const resolveUrl = (url: string) => {
+    if (!url) return "";
+    if (url.startsWith("http") || url.startsWith("blob:")) return url;
+    return `https://back-jawla.tajera.net${url}`;
+  };
+  const displayUrl = resolveUrl(value) || previewUrl;
 
   // ── File selection → open cropper ──
   const handleFile = useCallback(
@@ -176,7 +181,7 @@ export function ImageUpload({
             className="w-full h-48 object-cover"
             onError={(e) => {
               (e.target as HTMLImageElement).src =
-                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23f5f5f5' width='400' height='200'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23999' font-family='sans-serif' font-size='14'%3EImage Error%3C/text%3E%3C/svg%3E";
+                "https://via.placeholder.com/400x200?text=Image+Error";
             }}
           />
           {uploading && (
