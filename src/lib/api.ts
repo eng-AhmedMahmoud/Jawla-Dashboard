@@ -8,20 +8,13 @@ export const API_BASE_URL =
 const API_ORIGIN = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
 
 /**
- * Resolve an image URL that may be relative or a broken localhost URL.
- * - Broken localhost URLs → rewrite to production backend origin
+ * Resolve an image URL that may be relative.
  * - R2 paths like "/upload/file/images/uuid.ext" → prepend full API base URL
  * - Legacy paths like "/uploads/uuid.ext" → prepend origin only (served by ServeStaticModule)
  */
 export function resolveImageUrl(url: string): string {
   if (!url) return "";
-  if (url.startsWith("blob:") || url.startsWith("data:")) return url;
-  // Rewrite broken localhost URLs from old uploads to production backend
-  if (url.includes("localhost") && url.includes("/uploads/")) {
-    const path = url.replace(/^https?:\/\/[^/]+/, "");
-    return `${API_ORIGIN}${path}`;
-  }
-  if (url.startsWith("http")) return url;
+  if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("data:")) return url;
   // Legacy uploads served at /uploads/ without /api/v1 prefix
   if (url.startsWith("/uploads/")) return `${API_ORIGIN}${url}`;
   // R2 proxy served at /api/v1/upload/file/...
