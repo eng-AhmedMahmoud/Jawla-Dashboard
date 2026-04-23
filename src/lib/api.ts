@@ -9,13 +9,17 @@ const API_ORIGIN = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
 
 /**
  * Resolve image URLs from the backend to full absolute URLs.
- * Handles relative paths, broken localhost URLs, and passes through valid URLs.
+ * The backend may return URLs with the wrong origin (using the request's
+ * Origin header instead of its own), so any URL containing /uploads/
+ * is rewritten to use the backend origin.
  */
 export function resolveImageUrl(url: string): string {
   if (!url) return "";
   if (url.startsWith("blob:") || url.startsWith("data:")) return url;
-  if (url.includes("localhost") && url.includes("/uploads/")) {
-    return `${API_ORIGIN}${url.replace(/^https?:\/\/[^/]+/, "")}`;
+  // Any /uploads/ URL must point to the backend, strip any wrong origin
+  if (url.includes("/uploads/")) {
+    const path = url.replace(/^https?:\/\/[^/]+/, "");
+    return `${API_ORIGIN}${path}`;
   }
   if (url.startsWith("http")) return url;
   return `${API_ORIGIN}${url}`;
