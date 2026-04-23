@@ -4,6 +4,23 @@ import { AuthResponse, LoginDto, RegisterDto } from "@/types";
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://back-jawla.tajera.net/api/v1";
 
+/** Backend origin without /api/v1 path */
+const API_ORIGIN = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
+
+/**
+ * Resolve image URLs from the backend to full absolute URLs.
+ * Handles relative paths, broken localhost URLs, and passes through valid URLs.
+ */
+export function resolveImageUrl(url: string): string {
+  if (!url) return "";
+  if (url.startsWith("blob:") || url.startsWith("data:")) return url;
+  if (url.includes("localhost") && url.includes("/uploads/")) {
+    return `${API_ORIGIN}${url.replace(/^https?:\/\/[^/]+/, "")}`;
+  }
+  if (url.startsWith("http")) return url;
+  return `${API_ORIGIN}${url}`;
+}
+
 class ApiService {
   private api: AxiosInstance;
 
@@ -422,14 +439,9 @@ class ApiService {
     const response = await this.api.post("/upload/image", formData, {
       headers: { "Content-Type": undefined },
     });
-    // Backend returns relative URL like "/uploads/filename.jpg"
-    // Construct the full URL using the API base origin (strip /api/v1 with or without trailing slash)
-    const baseOrigin = API_BASE_URL.replace(/\/api\/v1\/?$/, "");
     return {
       ...response.data,
-      url: response.data.url?.startsWith("http")
-        ? response.data.url
-        : `${baseOrigin}${response.data.url}`,
+      url: resolveImageUrl(response.data.url),
     };
   }
 

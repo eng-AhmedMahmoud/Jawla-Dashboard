@@ -8,7 +8,7 @@ import {
   Loader2,
   Crop,
 } from "lucide-react";
-import { apiService } from "@/lib/api";
+import { apiService, resolveImageUrl } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { ImageCropModal } from "./ImageCropModal";
 
@@ -38,18 +38,7 @@ export function ImageUpload({
   const [cropOpen, setCropOpen] = useState(false);
   const [rawImageSrc, setRawImageSrc] = useState("");
 
-  // Show server URL or local preview — resolve relative paths against the API
-  const resolveUrl = (url: string) => {
-    if (!url) return "";
-    if (url.startsWith("blob:") || url.startsWith("data:")) return url;
-    // Rewrite broken localhost URLs to production backend
-    if (url.includes("localhost") && url.includes("/uploads/")) {
-      return `https://back-jawla.tajera.net${url.replace(/^https?:\/\/[^/]+/, "")}`;
-    }
-    if (url.startsWith("http")) return url;
-    return `https://back-jawla.tajera.net${url}`;
-  };
-  const displayUrl = resolveUrl(value) || previewUrl;
+  const displayUrl = resolveImageUrl(value) || previewUrl;
 
   // ── File selection → open cropper ──
   const handleFile = useCallback(

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
-import { apiService } from "@/lib/api";
+import { apiService, resolveImageUrl } from "@/lib/api";
 import { Package } from "@/types";
 import { formatPrice } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -100,7 +100,7 @@ export default function PackagesPage() {
               <div className="relative h-48 bg-neutral-200 overflow-hidden">
                 {pkg.image ? (
                   <img
-                    src={pkg.image}
+                    src={resolveImageUrl(pkg.image)}
                     alt={pkg.titleEn}
                     className="w-full h-full object-cover"
                     onError={(e) => {

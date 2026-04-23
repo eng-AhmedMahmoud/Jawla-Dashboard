@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { LoadingSpinner } from "@/components/ui/Loading";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { useAppStore } from "@/store/useAppStore";
-import { apiService } from "@/lib/api";
+import { apiService, resolveImageUrl } from "@/lib/api";
 import { Blog } from "@/types";
 import { formatDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -127,7 +127,7 @@ export default function BlogsPage() {
                     <div className="flex items-start gap-3">
                       {item.image && (
                         <img
-                          src={item.image}
+                          src={resolveImageUrl(item.image)}
                           alt={item.titleEn}
                           className="w-12 h-12 rounded object-cover"
                           onError={(e) => {
