@@ -178,11 +178,15 @@ export default function HeroSlidersPage() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="w-24 h-14 rounded-lg overflow-hidden bg-neutral-100">
-                      <img
-                        src={resolveImageUrl(item.image)}
-                        alt={item.titleEn}
-                        className="w-full h-full object-cover"
-                      />
+                      {item.image ? (
+                        <img
+                          src={resolveImageUrl(item.image)}
+                          alt={item.titleEn}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-neutral-400 text-xs">No image</div>
+                      )}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-neutral-700 text-sm max-w-xs">
